@@ -90,31 +90,32 @@
     </build>
 
     <developers>
-    <!-- FIXME add developers -->
+
         <developer>
             <id>tch</id>
             <name>Moise Junior Tchomnou Chengo</name>
             <email>moise.j.chengo@stud.h-da.de</email>
         </developer>
         <developer>
-            <id> </id>
-            <name></name>
-            <email> </email>
+            <id>istzahamd</id>
+            <name>Zakaria Hamdani</name>
+            <email>Zakaria.Hamdani@stud.h-da.de</email>
         </developer>
         <developer>
-            <id> </id>
-            <name></name>
-            <email> </email>
+            <id>istdamirs</id>
+            <name>Daniya Mirshanova</name>
+            <email>daniya.mirshanova@stud.h-da.de</email>
+        </developer>
+
+        <developer>
+            <id>771483 </id>
+            <name>Nguyen Minh Hoang</name>
+            <email>minh.H.b.Nguyen@stud.h-da.de</email>
         </developer>
         <developer>
-            <id> </id>
-            <name></name>
-            <email> </email>
-        </developer>
-        <developer>
-            <id> </id>
-            <name></name>
-            <email> </email>
+            <id> 770638 </id>
+            <name>Dinh Thang Khuc</name>
+            <email>dinh.t.Khuc@stud.h-da.de</email>
         </developer>
 
     </developers>
