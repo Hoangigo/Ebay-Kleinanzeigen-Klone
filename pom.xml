@@ -10,8 +10,8 @@
 
     <name>HS Kleinanzeigen</name>
     <description>Plattform zum Verwalten von Kleinanzeigen</description>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+
+    <url>https://code.fbi.h-da.de/jee-dbae-ws-2023/gruppe-4/hs-kleinanzeigen</url>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -25,7 +25,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
-        <!-- FIXME add java version -->
+
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
     </properties>
 
     <dependencyManagement>
@@ -87,6 +90,33 @@
     </build>
 
     <developers>
-    <!-- FIXME add developers -->
+
+        <developer>
+            <id>tch</id>
+            <name>Moise Junior Tchomnou Chengo</name>
+            <email>moise.j.chengo@stud.h-da.de</email>
+        </developer>
+        <developer>
+            <id>istzahamd</id>
+            <name>Zakaria Hamdani</name>
+            <email>Zakaria.Hamdani@stud.h-da.de</email>
+        </developer>
+        <developer>
+            <id>istdamirs</id>
+            <name>Daniya Mirshanova</name>
+            <email>daniya.mirshanova@stud.h-da.de</email>
+        </developer>
+
+        <developer>
+            <id>771483 </id>
+            <name>Nguyen Minh Hoang</name>
+            <email>minh.H.b.Nguyen@stud.h-da.de</email>
+        </developer>
+        <developer>
+            <id> 770638 </id>
+            <name>Dinh Thang Khuc</name>
+            <email>dinh.t.Khuc@stud.h-da.de</email>
+        </developer>
+
     </developers>
 </project>
