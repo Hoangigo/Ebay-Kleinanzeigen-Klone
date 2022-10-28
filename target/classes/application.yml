@@ -1,0 +1,21 @@
+server:
+    # FIXME: add application context-path settings                          #
+  # servlet:                                                              #
+  #    context-path:                                                      #
+    port: 8081
+
+    # FIXME: use the following credentials for your sql connection          #
+  # driver-class-name: com.mysql.cj.jdbc.Driver                           #
+  # url: jdbc:mysql://localhost:4406/KLEINANZEIGEN?useSSL=false           #
+  # username: root                                                        #
+  # password: start01                                                     #
+  
+    # use the following properties to execute DDL on startup                #
+  # sql.init.mode: always                                                 #
+  # jpa.hibernate.ddl-auto: none                                          #
+  # jpa.hibernate.naming.physical-strategy:                               #
+  #    org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #
+  
+    # FIXME: use the following properties to enable actuator endpoints      #
+  # management.endpoints.web.exposure.include: "*"                        #
+    
