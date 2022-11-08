@@ -1,25 +1,34 @@
-drop table if exists AD;
-drop table if exists CATEGORY;
-
-
-create table CATEGORY (
-	id integer not null auto_increment,
-    parent_id integer, 
-    name varchar(50), 
-    
-    primary key (id), 
-    foreign key (parent_id) references CATEGORY(id)
-); 
-
-create table AD (
-	id integer not null auto_increment, 
-    ad_type enum('OFFER', 'REQUEST') not null, 
-    category_id integer not null, 
-    title varchar(50) not null, 
-    ad_description varchar(50) not null, 
-    price integer, 
-    created timestamp not null, 
-    
-    primary key (id),
-    foreign key (category_id) references CATEGORY(id)
+/*==============================================================*/
+/* Table: CATEGORY                                                */
+/*==============================================================*/
+create table IF NOT EXISTS CATEGORY
+(
+    ID        INT AUTO_INCREMENT,
+    PARENT_ID INT,
+    NAME      VARCHAR(30),
+    constraint PK_CATEGORY primary key (ID),
+    constraint FK_CATEGORY_PARENT_ID_CATEGORY foreign key (PARENT_ID)
+        references CATEGORY (ID)
+        on delete restrict on update restrict
 );
+
+/*==============================================================*/
+/* Table: AD                                                */
+/*==============================================================*/
+create table IF NOT EXISTS AD
+(
+    ID          INT AUTO_INCREMENT,
+    TYPE        ENUM ('OFFER', 'REQUEST') not null,
+    CATEGORY_ID INT                       not null,
+    TITLE       VARCHAR(30)               not null,
+    DESCRIPTION VARCHAR(100)              not null,
+    PRICE       INT,
+    LOCATION    VARCHAR(40),
+    CREATED     TIMESTAMP                 not null,
+    constraint PK_AD primary key (ID),
+    constraint FK_AD_CATEGORY_ID_CATEGORY foreign key (CATEGORY_ID)
+        references CATEGORY (ID)
+        on delete restrict on update restrict
+);
+
+
