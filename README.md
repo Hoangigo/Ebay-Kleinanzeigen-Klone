@@ -9,3 +9,4 @@ docker run --name=mysql -p 4406:3306 -e MYSQL_ROOT_PASSWORD=start01 -e MYSQL_DAT
 
 Project members: 
     Dinh Thang Khuc, 770638
+    Moise Junior, Tchomnou Chengo
