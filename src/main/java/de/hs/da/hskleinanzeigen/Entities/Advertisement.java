@@ -1,6 +1,7 @@
 package de.hs.da.hskleinanzeigen.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sun.istack.NotNull;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,16 +34,20 @@ public class Advertisement {
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
+  @NotNull //Post request returns 400 when type not there
   private AD_TYPE type;
 
   @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)
+  @NotNull
   private Category category;
 
   @Column(nullable = false)
+  @NotNull
   private String title;
 
   @Column(nullable = false)
+  @NotNull
   private String description;
 
   private Integer price;
