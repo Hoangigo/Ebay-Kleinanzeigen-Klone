@@ -1,7 +1,6 @@
 package de.hs.da.hskleinanzeigen.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.istack.NotNull;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
@@ -32,22 +32,22 @@ public class Advertisement {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
+  @NotNull(message = "Payload incomplete, Type ist mandatory") //Post request returns 400 when type not there
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  @NotNull //Post request returns 400 when type not there
   private AD_TYPE type;
 
   @ManyToOne
   @JoinColumn(name = "category_id", nullable = false)
-  @NotNull
+  @NotNull(message = "Payload incomplete, Category ist mandatory")
   private Category category;
 
   @Column(nullable = false)
-  @NotNull
+  @NotNull(message = "Payload incomplete, Title ist mandatory")
   private String title;
 
   @Column(nullable = false)
-  @NotNull
+  @NotNull(message = "Payload incomplete, Description ist mandatory")
   private String description;
 
   private Integer price;
@@ -58,18 +58,6 @@ public class Advertisement {
   @Column(nullable = false)
   @JsonIgnore //this attribute should not be returned after GET or POST Request
   private Timestamp created;
-
-  public Advertisement(Integer id, AD_TYPE type, Category category_id, String title,
-      String description, Integer price, String location, Timestamp created) {
-    this.id = id;
-    this.type = type;
-    this.category = category_id;
-    this.title = title;
-    this.description = description;
-    this.price = price;
-    this.location = location;
-    this.created = created;
-  }
 
   public Integer getId() {
     return id;
