@@ -38,6 +38,13 @@ public class WebSecurity {
         .and()
         .httpBasic()
     ;
+    //we have stopped the csrf to make post method work
+    http.cors()
+        .and()
+        .csrf()
+        .disable()
+    ;
+
     return http.build();
   }
 }
