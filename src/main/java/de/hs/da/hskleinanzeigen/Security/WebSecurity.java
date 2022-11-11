@@ -32,7 +32,7 @@ public class WebSecurity {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests()
         .antMatchers("/actuator/health", "/actuator/info").permitAll()
-        .antMatchers("/api/advertisements").hasAnyRole("Benutzer", "Administrator")
+        .antMatchers("/api/**").hasAnyRole("Benutzer", "Administrator")
         .antMatchers("/actuator/*").hasRole("Administrator")
         .anyRequest().authenticated()
         .and()
