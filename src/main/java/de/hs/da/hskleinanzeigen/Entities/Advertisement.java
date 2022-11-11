@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -43,11 +44,11 @@ public class Advertisement {
   private Category category;
 
   @Column(nullable = false)
-  @NotNull(message = "Payload incomplete, Title ist mandatory")
+  @NotEmpty(message = "Payload incomplete, Title ist mandatory")
   private String title;
 
   @Column(nullable = false)
-  @NotNull(message = "Payload incomplete, Description ist mandatory")
+  @NotEmpty(message = "Payload incomplete, Description ist mandatory")
   private String description;
 
   private Integer price;
