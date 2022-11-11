@@ -49,7 +49,8 @@ public class AdvertisementController {
       advertisement.setCategory(category.get());
       return advertisementRepository.save(advertisement);
     }
-    throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
         "Category with the given id not found, so we can create a new Advertisement");
   }
 
