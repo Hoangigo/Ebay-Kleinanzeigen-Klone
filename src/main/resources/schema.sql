@@ -47,6 +47,6 @@ create table IF NOT EXISTS AD
         references CATEGORY (ID)
         on delete restrict on update restrict,
     constraint FK_AD_USER_ID_USER foreign key (USER_ID)
-        references USER (ID)
+        references `USER` (ID)
         on delete restrict on update restrict
 );
