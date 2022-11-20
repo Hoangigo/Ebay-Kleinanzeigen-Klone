@@ -1,6 +1,6 @@
 package de.hs.da.hskleinanzeigen.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "CATEGORY")
@@ -18,10 +19,12 @@ public class Category {
   private Integer id;
 
   @Column(nullable = true)
-  @JsonIgnore
+  @JsonAlias("parentId")
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Integer parent_id;
 
   @JsonProperty(namespace = "name")
+  @NotEmpty(message = "you must give a name to the new category")
   private String name;
 
   public Category(Integer id, Integer parent_id, String name) {
