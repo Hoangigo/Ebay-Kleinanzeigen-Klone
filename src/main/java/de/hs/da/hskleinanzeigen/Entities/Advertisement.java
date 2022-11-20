@@ -43,6 +43,11 @@ public class Advertisement {
   @NotNull(message = "Payload incomplete, Category ist mandatory")
   private Category category;
 
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  @NotNull
+  private User user;
+
   @Column(nullable = false)
   @NotEmpty(message = "Payload incomplete, Title ist mandatory")
   private String title;
@@ -122,5 +127,13 @@ public class Advertisement {
 
   public void setCreated(Timestamp created) {
     this.created = created;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 }
