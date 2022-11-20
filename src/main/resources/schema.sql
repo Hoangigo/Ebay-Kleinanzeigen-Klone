@@ -15,7 +15,7 @@ create table IF NOT EXISTS CATEGORY
 /*==============================================================*/
 /* Table: USER                                                */
 /*==============================================================*/
-create table IF NOT EXISTS KLEINANZEIGEN.USER
+create table IF NOT EXISTS 'USER'
 (
     ID          INT AUTO_INCREMENT,
     EMAIL       VARCHAR(35)               not null,
