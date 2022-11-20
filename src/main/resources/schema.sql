@@ -25,9 +25,8 @@ create table IF NOT EXISTS USER
     PHONE    VARCHAR(20),
     LOCATION    VARCHAR(30),
     CREATED     TIMESTAMP                 not null,
-    constraint PK_AD primary key (ID)
+    constraint PK_USER primary key (ID)
 );
-
 
 /*==============================================================*/
 /* Table: AD                                                */
@@ -51,5 +50,3 @@ create table IF NOT EXISTS AD
         references USER (ID)
         on delete restrict on update restrict
 );
-
-
