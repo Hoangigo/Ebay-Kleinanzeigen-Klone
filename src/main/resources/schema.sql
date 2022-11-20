@@ -17,14 +17,15 @@ create table IF NOT EXISTS CATEGORY
 /*==============================================================*/
 create table IF NOT EXISTS USER
 (
-    ID          INT PRIMARY KEY AUTO_INCREMENT,
+    ID          INT AUTO_INCREMENT,
     EMAIL       VARCHAR(35)               not null,
     PASSWORD    VARCHAR(30)              not null,
     FIRST_NAME    VARCHAR(30),
     LAST_NAME    VARCHAR(30),
     PHONE    VARCHAR(20),
     LOCATION    VARCHAR(30),
-    CREATED     TIMESTAMP                 not null
+    CREATED     TIMESTAMP                 not null,
+    constraint PK_USER primary key (ID)
 );
 
 /*==============================================================*/
