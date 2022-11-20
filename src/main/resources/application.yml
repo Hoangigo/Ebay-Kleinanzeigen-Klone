@@ -7,7 +7,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:4406/KLEINANZEIGEN?useSSL=false;NON_KEYWORDS=USER
+    url: jdbc:mysql://localhost:4406/KLEINANZEIGEN?useSSL=false
     username: root
     password: start01
 
