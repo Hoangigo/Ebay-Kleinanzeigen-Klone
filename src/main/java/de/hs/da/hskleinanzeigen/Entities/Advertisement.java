@@ -63,6 +63,13 @@ import org.hibernate.annotations.CreationTimestamp;
     query = "SELECT a FROM Advertisement a where  "
         + " a.price >= :pf ")
 
+@NamedQuery(name = "Advertisement.findAdvertisements",
+query = "SELECT a FROM Advertisement a "
+    + "WHERE (:t is null OR a.type = :t) AND "
+    + "(:c is null OR a.category.id = :c ) AND "
+    + "(:pt is null  OR a.price <= :pt) AND "
+    + "(:pf is null OR a.price >= :pf)")
+
 
 public class Advertisement {
 
