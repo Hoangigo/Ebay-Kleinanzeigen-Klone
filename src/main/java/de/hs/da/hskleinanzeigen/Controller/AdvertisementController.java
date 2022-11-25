@@ -42,7 +42,6 @@ public class AdvertisementController {
   }
 
 
-
   @GetMapping(path = "/{id}")
   public Advertisement readOneAdvertisement(@PathVariable Integer id) {
     Optional<Advertisement> advertisement = advertisementRepository.findById(id);
@@ -54,10 +53,10 @@ public class AdvertisementController {
 
   @GetMapping(path = "")
   public Page<Advertisement> readAdvertisements(
-      @RequestParam(name = "type", required = false) Optional<String> type,
-      @RequestParam(name = "category", required = false) Optional<Integer> category,
-      @RequestParam(name = "priceFrom", required = false) Optional<Integer> priceFrom,
-      @RequestParam(name = "priceTo", required = false) Optional<Integer> priceTo,
+      @RequestParam(name = "type", required = false) AD_TYPE type,
+      @RequestParam(name = "category", required = false) Integer category,
+      @RequestParam(name = "priceFrom", required = false) Integer priceFrom,
+      @RequestParam(name = "priceTo", required = false) Integer priceTo,
       @RequestParam(name = "pageStart", required = true) Integer pageStart,
       @RequestParam(name = "pageSize", required = true) Integer pageSize) {
 
@@ -69,7 +68,7 @@ public class AdvertisementController {
     Pageable indexOfPageAndNumberOfElements = PageRequest.of(pageStart, pageSize,
         Sort.by("created").ascending()); //TODO muss man hier sortieren?
 
-    Page<Advertisement> result = selectRightQuery(
+    Page<Advertisement> result = advertisementRepository.findAdvertisements(
         indexOfPageAndNumberOfElements, type, category,
         priceFrom, priceTo);
 
@@ -95,7 +94,6 @@ public class AdvertisementController {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "User with the given id not found, so we can create a new Advertisement");
     }
-
 
     //return advertisementRepository.findById(advertisement.getId()).get();
     throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -146,7 +144,7 @@ public class AdvertisementController {
           } else {
             //t pf
             return advertisementRepository.findByTypePriceFrom(
-                indexOfPageAndNumberOfElements, type,  priceFrom);
+                indexOfPageAndNumberOfElements, type, priceFrom);
           }
         } else { //t
           if (priceToo.isPresent()) {//t pt
@@ -186,7 +184,7 @@ public class AdvertisementController {
           } else {
             //c
             return advertisementRepository.findByCategory(
-                indexOfPageAndNumberOfElements,  category);
+                indexOfPageAndNumberOfElements, category);
           }
         }
       } else {
@@ -206,7 +204,7 @@ public class AdvertisementController {
           if (priceToo.isPresent()) {//pt
             int priceTo = priceToo.get();
             return advertisementRepository.findByPriceTo(
-                indexOfPageAndNumberOfElements , priceTo);
+                indexOfPageAndNumberOfElements, priceTo);
           } else {
             //nichts
             return advertisementRepository.findAll(indexOfPageAndNumberOfElements);
