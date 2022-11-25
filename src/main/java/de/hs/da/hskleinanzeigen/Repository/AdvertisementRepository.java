@@ -54,4 +54,8 @@ public interface AdvertisementRepository extends
   Page<Advertisement> findByTypeCategoryPriceToPriceFrom(Pageable pageable,
       @Param("t") AD_TYPE type,
       @Param("c") int categoryId, @Param("pt") int priceTo, @Param("pf") int priceFrom);
+
+  Page<Advertisement> findAdvertisements(Pageable pageable,
+      @Param("t") AD_TYPE type,
+      @Param("c") Integer categoryId, @Param("pf") Integer priceFrom, @Param("pt") Integer priceTo);
 }
