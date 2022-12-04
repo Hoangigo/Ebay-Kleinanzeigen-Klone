@@ -18,7 +18,7 @@ create table IF NOT EXISTS CATEGORY
 create table IF NOT EXISTS `USER`
 (
     ID          INT AUTO_INCREMENT,
-    EMAIL       VARCHAR(35)               not null,
+    EMAIL       VARCHAR(60)               not null,
     PASSWORD    VARCHAR(30)              not null,
     FIRST_NAME    VARCHAR(30),
     LAST_NAME    VARCHAR(30),
