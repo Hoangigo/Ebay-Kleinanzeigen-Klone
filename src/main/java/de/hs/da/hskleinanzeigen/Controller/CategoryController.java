@@ -1,6 +1,8 @@
 package de.hs.da.hskleinanzeigen.Controller;
 
+import de.hs.da.hskleinanzeigen.DTO.CategoryDTO;
 import de.hs.da.hskleinanzeigen.Entities.Category;
+import de.hs.da.hskleinanzeigen.Mapper.CategoryMapper;
 import de.hs.da.hskleinanzeigen.Repository.CategoryRepository;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -16,36 +18,39 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping(path = "/api/categories")
 public class CategoryController {
+
   private final CategoryRepository categoryRepository;
+  private final CategoryMapper categoryMapper;
 
   @Autowired
-  public CategoryController(CategoryRepository categoryRepository) {
+  public CategoryController(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
     this.categoryRepository = categoryRepository;
+    this.categoryMapper = categoryMapper;
   }
 
-  @PostMapping("")
+
+  @PostMapping(consumes = "application/json")
   @ResponseStatus(code = HttpStatus.CREATED)
-  public Category createCategory(@RequestBody @Valid Category category) {
-    Optional<Category> sameCategory = categoryRepository.findByName(category.getName());
-    if(sameCategory.isPresent())
-    {
+  public CategoryDTO createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
+    Optional<Category> sameCategory = categoryRepository.findByName(categoryDTO.getName());
+    if (sameCategory.isPresent()) {
       throw new ResponseStatusException(HttpStatus.CONFLICT,
           "Category with the given name already exists");
-    }//TODO bezieht sich die doppelt category nur auf den Namen? oder (name, parentId)? DDL Category Name Unique?
+    }
 
-    if(category.getParent_id() != null) {
-      Optional<Category> parent = categoryRepository.findById(category.getParent_id());
+    if (categoryDTO.getParentId() != null) {
+      Optional<Category> parent = categoryRepository.findById(categoryDTO.getParentId());
       if (parent.isPresent()) {
-        return categoryRepository.save(category);
-      }
-      else {
+        return categoryMapper.toCategoryDTO(
+            categoryRepository.save(categoryMapper.toCategoryEntity(categoryDTO)));
+      } else {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
             "Category with the given parent id not found");
       }
-    }
-    else {
+    } else {
       //kein Parent_id wurde angegeben
-      return categoryRepository.save(category);
+      return categoryMapper.toCategoryDTO(
+          categoryRepository.save(categoryMapper.toCategoryEntity(categoryDTO)));
     }
 
   }

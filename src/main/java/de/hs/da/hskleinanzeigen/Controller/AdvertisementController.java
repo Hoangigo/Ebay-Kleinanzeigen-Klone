@@ -1,9 +1,13 @@
 package de.hs.da.hskleinanzeigen.Controller;
 
+import de.hs.da.hskleinanzeigen.DTO.AdvertisementDTO;
 import de.hs.da.hskleinanzeigen.Entities.Advertisement;
 import de.hs.da.hskleinanzeigen.Entities.Advertisement.AD_TYPE;
 import de.hs.da.hskleinanzeigen.Entities.Category;
 import de.hs.da.hskleinanzeigen.Entities.User;
+import de.hs.da.hskleinanzeigen.Mapper.AdvertisementMapper;
+import de.hs.da.hskleinanzeigen.Mapper.CategoryMapper;
+import de.hs.da.hskleinanzeigen.Mapper.UserMapper;
 import de.hs.da.hskleinanzeigen.Repository.AdvertisementRepository;
 import de.hs.da.hskleinanzeigen.Repository.CategoryRepository;
 import de.hs.da.hskleinanzeigen.Repository.UserRepository;
@@ -33,26 +37,36 @@ public class AdvertisementController {
   private final CategoryRepository categoryRepository;
   private final UserRepository userRepository;
 
+  private final AdvertisementMapper adMapper;
+
+  private final UserMapper userMapper;
+
+  private final CategoryMapper categoryMapper;
+
   @Autowired
   public AdvertisementController(AdvertisementRepository advertisementRepository,
-      CategoryRepository categoryRepository, UserRepository userRepository) {
+      CategoryRepository categoryRepository, UserRepository userRepository,
+      AdvertisementMapper adMapper, UserMapper userMapper, CategoryMapper categoryMapper) {
     this.advertisementRepository = advertisementRepository;
     this.categoryRepository = categoryRepository;
     this.userRepository = userRepository;
+    this.adMapper = adMapper;
+    this.userMapper = userMapper;
+    this.categoryMapper = categoryMapper;
   }
 
 
-  @GetMapping(path = "/{id}")
-  public Advertisement readOneAdvertisement(@PathVariable Integer id) {
+  @GetMapping(produces = "application/json", path = "/{id}")
+  public AdvertisementDTO readOneAdvertisement(@PathVariable Integer id) {
     Optional<Advertisement> advertisement = advertisementRepository.findById(id);
     if (advertisement.isPresent()) {
-      return advertisement.get();
+      return adMapper.toADDTO(advertisement.get());
     }
     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Advertisement with this id not found");
   }
 
-  @GetMapping(path = "")
-  public Page<Advertisement> readAdvertisements(
+  @GetMapping(produces = "application/json")
+  public Page<AdvertisementDTO> readAdvertisements(
       @RequestParam(name = "type", required = false) AD_TYPE type,
       @RequestParam(name = "category", required = false) Integer category,
       @RequestParam(name = "priceFrom", required = false) Integer priceFrom,
@@ -66,7 +80,7 @@ public class AdvertisementController {
     }
 
     Pageable indexOfPageAndNumberOfElements = PageRequest.of(pageStart, pageSize,
-        Sort.by("created").ascending()); //TODO muss man hier sortieren?
+        Sort.by("created").ascending());
 
     Page<Advertisement> result = advertisementRepository.findAdvertisements(
         indexOfPageAndNumberOfElements, type, category,
@@ -76,20 +90,20 @@ public class AdvertisementController {
       throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Such User entries not found");
     }
 
-    return result;
+    return result.map(advertisement -> adMapper.toADDTO(advertisement));
   }
 
 
-  @PostMapping("")
+  @PostMapping(consumes = "application/json")
   @ResponseStatus(code = HttpStatus.CREATED)
-  public Advertisement createAdvertisement(@RequestBody @Valid Advertisement advertisement) {
-    Optional<Category> category = categoryRepository.findById(advertisement.getCategory().getId());
+  public AdvertisementDTO createAdvertisement(@RequestBody @Valid AdvertisementDTO advertisementDTO) {
+    Optional<Category> category = categoryRepository.findById(advertisementDTO.getCategory().getId());
     if (category.isPresent()) {
-      Optional<User> user = userRepository.findById(advertisement.getUser().getId());
+      Optional<User> user = userRepository.findById(advertisementDTO.getUser().getId());
       if (user.isPresent()) {
-        advertisement.setUser(user.get());
-        advertisement.setCategory(category.get());
-        return advertisementRepository.save(advertisement);
+        advertisementDTO.setUser(userMapper.toUserDTO(user.get()));
+        advertisementDTO.setCategory(categoryMapper.toCategoryDTO(category.get()));
+        return adMapper.toADDTO(advertisementRepository.save(adMapper.toADEntity(advertisementDTO)));
       }
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "User with the given id not found, so we can create a new Advertisement");
