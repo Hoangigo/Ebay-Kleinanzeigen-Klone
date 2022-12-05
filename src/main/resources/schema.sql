@@ -50,3 +50,22 @@ create table IF NOT EXISTS AD
         references `USER` (ID)
         on delete restrict on update restrict
 );
+
+/*==============================================================*/
+/* Table: NOTEPAD                                                */
+/*==============================================================*/
+create table IF NOT EXISTS NOTEPAD
+(
+    ID          INT AUTO_INCREMENT,
+    USER_ID     INT                       not null,
+    AD_ID       INT                       not null,
+    NOTE        VARCHAR(40),
+    CREATED     TIMESTAMP                 not null,
+    constraint PK_NOTEPAD primary key (ID),
+    constraint FK_NOTEPAD_AD_ID_AD foreign key (AD_ID)
+        references AD (ID)
+        on delete restrict on update restrict,
+    constraint FK_NOTEPAD_USER_ID_USER foreign key (USER_ID)
+        references `USER` (ID)
+        on delete restrict on update restrict
+);
