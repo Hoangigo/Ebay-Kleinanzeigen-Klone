@@ -1,0 +1,142 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+  <changeSet author="Moise Junior Chengo" id="1670260968099-1">
+    <createTable tableName="AD">
+      <column autoIncrement="true" name="ID" type="INT">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="TYPE" type="ENUM('REQUEST', 'OFFER')">
+        <constraints nullable="false"/>
+      </column>
+      <column name="CATEGORY_ID" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TITLE" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="DESCRIPTION" type="VARCHAR(100)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="PRICE" type="INT"/>
+      <column name="LOCATION" type="VARCHAR(40)"/>
+      <column name="USER_ID" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="CREATED" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="Moise Junior Chengo" id="1670260968099-2">
+    <createTable tableName="CATEGORY">
+      <column autoIncrement="true" name="ID" type="INT">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="PARENT_ID" type="INT"/>
+      <column name="NAME" type="VARCHAR(30)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="Moise Junior Chengo" id="1670260968099-3">
+    <createTable tableName="USER">
+      <column autoIncrement="true" name="ID" type="INT">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="EMAIL" type="VARCHAR(60)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="PASSWORD" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="FIRST_NAME" type="VARCHAR(30)"/>
+      <column name="LAST_NAME" type="VARCHAR(30)"/>
+      <column name="PHONE" type="VARCHAR(20)"/>
+      <column name="LOCATION" type="VARCHAR(30)"/>
+      <column name="CREATED" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+  <changeSet author="Moise Junior Chengo" id="1670260968099-4">
+    <createIndex indexName="FK_AD_CATEGORY_ID_CATEGORY" tableName="AD">
+      <column name="CATEGORY_ID"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="Moise Junior Chengo" id="1670260968099-5">
+    <createIndex indexName="FK_AD_USER_ID_USER" tableName="AD">
+      <column name="USER_ID"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="Moise Junior Chengo" id="1670260968099-6">
+    <createIndex indexName="FK_CATEGORY_PARENT_ID_CATEGORY" tableName="CATEGORY">
+      <column name="PARENT_ID"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="Moise Junior Chengo" id="1670260968099-7">
+    <addForeignKeyConstraint baseColumnNames="CATEGORY_ID" baseTableName="AD"
+      constraintName="FK_AD_CATEGORY_ID_CATEGORY" deferrable="false" initiallyDeferred="false"
+      onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"
+      referencedTableName="CATEGORY" validate="true"/>
+  </changeSet>
+  <changeSet author="Moise Junior Chengo" id="1670260968099-8">
+    <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="AD"
+      constraintName="FK_AD_USER_ID_USER" deferrable="false" initiallyDeferred="false"
+      onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USER"
+      validate="true"/>
+  </changeSet>
+  <changeSet author="Moise Junior Chengo" id="1670260968099-9">
+    <addForeignKeyConstraint baseColumnNames="PARENT_ID" baseTableName="CATEGORY"
+      constraintName="FK_CATEGORY_PARENT_ID_CATEGORY" deferrable="false" initiallyDeferred="false"
+      onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID"
+      referencedTableName="CATEGORY" validate="true"/>
+  </changeSet>
+
+  <!-- Add new Table NOTEPAD-->
+  <!-- Manuelly increase id for new changeSet like on top-->
+  <changeSet author="Moise Junior Chengo" id="1670260968099-10">
+    <createTable tableName="NOTEPAD">
+      <column autoIncrement="true" name="ID" type="INT">
+        <constraints nullable="false" primaryKey="true"/>
+      </column>
+      <column name="USER_ID" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="AD_ID" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="NOTE" type="VARCHAR(60)"/>
+      <column name="CREATED" type="timestamp">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="Moise Junior Chengo" id="1670260968099-11">
+    <createIndex indexName="FK_NOTEPAD_AD_ID_AD" tableName="NOTEPAD">
+      <column name="AD_ID"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Moise Junior Chengo" id="1670260968099-12">
+    <createIndex indexName="FK_NOTEPAD_USER_ID_USER" tableName="NOTEPAD">
+      <column name="USER_ID"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Moise Junior Chengo" id="1670260968099-13">
+    <addForeignKeyConstraint baseColumnNames="AD_ID" baseTableName="NOTEPAD"
+      constraintName="FK_NOTEPAD_AD_ID_AD" deferrable="false" initiallyDeferred="false"
+      onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="AD"
+      validate="true"/>
+  </changeSet>
+
+  <changeSet author="Moise Junior Chengo" id="1670260968099-14">
+    <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="NOTEPAD"
+      constraintName="FK_NOTEPAD_USER_ID_USER" deferrable="false" initiallyDeferred="false"
+      onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="ID" referencedTableName="USER"
+      validate="true"/>
+  </changeSet>
+</databaseChangeLog>

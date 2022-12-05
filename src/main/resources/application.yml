@@ -14,7 +14,12 @@ spring:
     # use the following properties to execute DDL on startup                #
   sql:
     init:
-      mode: always
+      mode: never
+
+  liquibase:
+    change-log: classpath:/liquibase/liquibase-changeLog.xml
+    enabled: true
+
   jpa:
     hibernate:
       ddl-auto: none
