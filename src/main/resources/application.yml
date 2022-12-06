@@ -3,6 +3,14 @@ server:
     context-path: /hs-kleinanzeigen
   port: 8081
 
+springdoc:
+  api-docs:
+    path: /api-docs
+
+  swagger-ui:
+    path: /swagger-ui/index.html
+    operationsSorter: method
+
   #  use the following credentials for your sql connection          #
 spring:
   datasource:
