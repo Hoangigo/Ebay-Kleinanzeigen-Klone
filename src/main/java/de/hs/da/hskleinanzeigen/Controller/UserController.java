@@ -4,6 +4,11 @@ import de.hs.da.hskleinanzeigen.DTO.UserDTO;
 import de.hs.da.hskleinanzeigen.Entities.User;
 import de.hs.da.hskleinanzeigen.Mapper.UserMapper;
 import de.hs.da.hskleinanzeigen.Repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(path = "/api/users")
+@Tag(name = "User", description = "Read and set users and their properties")
 public class UserController {
 
 
@@ -38,7 +44,13 @@ public class UserController {
 
   @PostMapping(consumes = "application/json")
   @ResponseStatus(code = HttpStatus.CREATED)
-  public UserDTO createUser(@RequestBody @Valid UserDTO userDTO) {
+  @Operation(summary = "Create a new user")
+  @ApiResponses({ //
+      @ApiResponse(responseCode = "201", description = "A new user has been created"),
+      @ApiResponse(responseCode = "409",
+          description = "The given email is already used by an other User")})
+  public UserDTO createUser(@Parameter(description = "Infos of the user to be created")
+  @RequestBody @Valid UserDTO userDTO) {
     Optional<User> doubleEmail = userRepository.findByEmail(userDTO.getEmail());
     if (doubleEmail.isPresent()) {
       throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -48,7 +60,13 @@ public class UserController {
   }
 
   @GetMapping(produces = "application/json", path = "/{id}")
-  public UserDTO readOneUser(@PathVariable final Integer id) {
+  @Operation(summary = "Returns a specific user by its identifier.")
+  @ApiResponses({ //
+      @ApiResponse(responseCode = "200", description = "User with the given id was found"),
+      @ApiResponse(responseCode = "404", description = "No user found")
+  })
+  public UserDTO readOneUser(
+      @Parameter(description = "id of user to be searched") @PathVariable final Integer id) {
     Optional<User> user = (userRepository.findById(id));
     if (user.isPresent()) {
       return userMapper.toUserDTO(user.get());
@@ -57,10 +75,17 @@ public class UserController {
   }
 
   @GetMapping(produces = "application/json", path = "")
-  public Page<UserDTO> readUsers(@RequestParam(name = "pageStart", required = true) int pageStart,
+  @Operation(summary = "Returns a Page of users.")
+  @ApiResponses({ //
+      @ApiResponse(responseCode = "200", description = "OK"),
+      @ApiResponse(responseCode = "400",
+          description = "Parameter are not valid! Notice: size > 1 and start >= 0")})
+  public Page<UserDTO> readUsers(
+      @Parameter(description = "index of the page to be shown")
+      @RequestParam(name = "pageStart", required = true) int pageStart,
+      @Parameter(description = "maximal number of users on a Page")
       @RequestParam(name = "pageSize", required = true) int pageSize) {
-    if ((pageSize < 1) || (pageStart < 0))
-    {
+    if ((pageSize < 1) || (pageStart < 0)) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "Parameter are not valid! Notice: size > 1 and start >= 0");
     }
@@ -72,9 +97,8 @@ public class UserController {
     if (result.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Such User entries not found");
     }
-    Page<UserDTO> resultDTO = result.map(user -> userMapper.toUserDTO(user));
 
-    return resultDTO;
+    return result.map(user -> userMapper.toUserDTO(user));
   }
 
 }
