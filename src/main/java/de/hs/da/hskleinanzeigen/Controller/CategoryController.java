@@ -4,6 +4,12 @@ import de.hs.da.hskleinanzeigen.DTO.CategoryDTO;
 import de.hs.da.hskleinanzeigen.Entities.Category;
 import de.hs.da.hskleinanzeigen.Mapper.CategoryMapper;
 import de.hs.da.hskleinanzeigen.Repository.CategoryRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(path = "/api/categories")
+@Tag(name = "Category", description = "Set new category and their properties")
 public class CategoryController {
 
   private final CategoryRepository categoryRepository;
@@ -31,6 +38,18 @@ public class CategoryController {
 
   @PostMapping(consumes = "application/json")
   @ResponseStatus(code = HttpStatus.CREATED)
+  @Operation(summary = "Create a new user")
+  @ApiResponses({ //
+      @ApiResponse(responseCode = "201", description = "A category has been created",
+          content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = CategoryDTO.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "Category with the given parent id not found or payload incomplete",
+          content = @Content),
+      @ApiResponse(responseCode = "409",
+          description = "Category with the given name already exists", content = @Content)})
   public CategoryDTO createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
     Optional<Category> sameCategory = categoryRepository.findByName(categoryDTO.getName());
     if (sameCategory.isPresent()) {
