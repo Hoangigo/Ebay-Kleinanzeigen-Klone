@@ -78,6 +78,7 @@ public class UserController {
   @Operation(summary = "Returns a Page of users.")
   @ApiResponses({ //
       @ApiResponse(responseCode = "200", description = "OK"),
+      @ApiResponse(responseCode = "204", description = "Such User entries not found"),
       @ApiResponse(responseCode = "400",
           description = "Parameter are not valid! Notice: size > 1 and start >= 0")})
   public Page<UserDTO> readUsers(
