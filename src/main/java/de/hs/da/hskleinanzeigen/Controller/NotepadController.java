@@ -9,6 +9,13 @@ import de.hs.da.hskleinanzeigen.Mapper.NotepadMapper;
 import de.hs.da.hskleinanzeigen.Repository.AdvertisementRepository;
 import de.hs.da.hskleinanzeigen.Repository.NotepadRepository;
 import de.hs.da.hskleinanzeigen.Repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@Tag(name = "Notepad", description = "Read, set and update Notepad, also delete entry from Notepad")
 public class NotepadController {
 
   private final NotepadRepository notepadRepository;
@@ -43,7 +51,16 @@ public class NotepadController {
 
   @PutMapping(consumes = "application/json", path = "/api/users/{userId}/notepad")
   @ResponseStatus(code = HttpStatus.OK)
+  @Operation(summary = "Add an AD to an User Notepad")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200",
+          description = "Notepad of the given user has successfully been updated",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = NotepadPutDTO.class))}),
+      @ApiResponse(responseCode = "400", content = @Content,
+          description = "Advertisement or User with the given ids not found OR payload incomplete")})
   public NotepadPutDTO addADtoNotepad(@Valid @RequestBody NotepadPutDTO note,
+      @Parameter(description = "id of user whom notepad should be updated")
       @PathVariable Integer userId) {
     Optional<User> user = userRepository.findById(userId);
     if (user.isPresent()) {
@@ -75,7 +92,17 @@ public class NotepadController {
   }
 
   @GetMapping(path = "/api/users/{userId}/notepad", produces = "application/json")
-  public List<NotepadGetDTO> getNotepadByUser(@PathVariable Integer userId) {
+  @Operation(summary = "Get Notepad of a given user")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Return the whole Notepad of the given user",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = NotepadGetDTO.class))}),
+      @ApiResponse(responseCode = "404",
+          description = "User with the given id not found", content = @Content),
+      @ApiResponse(responseCode = "204", content = @Content,
+          description = "No entry found on notepad for the given user")})
+  public List<NotepadGetDTO> getNotepadByUser(@Parameter(description = "id of user")
+  @PathVariable Integer userId) {
     //Optional<User> user = userRepository.findById(userId);
     //TODO untere Variante performanter?
     if (userRepository.existsById(userId)) {
@@ -85,7 +112,7 @@ public class NotepadController {
             .map(notepad -> notepadMapper.toNotepadGetDTO(notepad)).collect(Collectors.toList());
       }
       throw new ResponseStatusException(HttpStatus.NO_CONTENT,
-          "No notepad found for the given user");
+          "No entry found on notepad for the given user");
     }
     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found");
   }
@@ -93,7 +120,15 @@ public class NotepadController {
 
   @DeleteMapping(path = "/api/users/{userId}/notepad/{adId}")
   @ResponseStatus(code = HttpStatus.NO_CONTENT) //TODO wirklich so gewollt?
-  public void deleteNotepad(@PathVariable Integer userId, @PathVariable Integer adId) {
+  @Operation(summary = "Delete an AD from Notepad of a given user")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", content = @Content,
+          description = "Ad has been successfully removed from Notepad"),
+      @ApiResponse(responseCode = "404",
+          description = "User or Advertisement with the given id not found", content = @Content)})
+  public void deleteNotepad(
+      @Parameter(description = "id of user") @PathVariable Integer userId,
+      @Parameter(description = "id of the advertisement to be deleted") @PathVariable Integer adId){
     //Optional<User> user = userRepository.findById(userId);
     //if (user.isPresent()) {
     if (userRepository.existsById(userId)) {
