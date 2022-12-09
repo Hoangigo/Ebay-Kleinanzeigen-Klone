@@ -20,6 +20,6 @@ public class NotepadPutDTO {
   @NotNull(message = "Advertisement Id fehlt noch")
   private Integer advertisementId;
 
-  private String note; //TODO Notepad ohne Note möglich? Note in DDL nullable, so gewollt?
+  private String note; //Notepad ohne Note möglich? Note in DDL nullable, so gewollt?
 
 }

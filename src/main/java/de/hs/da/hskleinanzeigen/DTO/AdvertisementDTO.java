@@ -25,7 +25,7 @@ public class AdvertisementDTO {
   private CategoryDTO category;
 
   @NotNull
-  //@Valid  //TODO validation an der Stelle unerwünscht? Wenn an Prak2task3201 failed
+  //@Valid  //Auskommentiert denn sonst schlägt test Prak2task3201 fehl
   private UserDTO user;
 
   @NotEmpty(message = "Payload incomplete, Title ist mandatory")

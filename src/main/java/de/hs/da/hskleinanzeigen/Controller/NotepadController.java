@@ -69,7 +69,7 @@ public class NotepadController {
       if (advertisement.isPresent()) {
         Optional<Notepad> notepadOptional = notepadRepository.findByUserIdAndAdId(userId,
             note.getAdvertisementId());
-        if (notepadOptional.isPresent()) {
+        if (notepadOptional.isPresent()) { //AD schon vorhanden!!! nur note  updaten?
           //TODO Mit Blick auf performance, besser eigene update schreiben? and existById statt findById?
           Notepad notepad = notepadOptional.get();
           notepad.setNote(note.getNote());
@@ -105,7 +105,7 @@ public class NotepadController {
   public List<NotepadGetDTO> getNotepadByUser(@Parameter(description = "id of user")
   @PathVariable Integer userId) {
     //Optional<User> user = userRepository.findById(userId);
-    //TODO untere Variante performanter?
+    //untere Variante performanter? JA, exits lädt nicht das ganze
     if (userRepository.existsById(userId)) {
       List<Notepad> notepadList = notepadRepository.findByUserId(userId);
       if (!notepadList.isEmpty()) {
@@ -120,7 +120,8 @@ public class NotepadController {
 
 
   @DeleteMapping(path = "/api/users/{userId}/notepad/{adId}")
-  @ResponseStatus(code = HttpStatus.NO_CONTENT) //TODO wirklich so gewollt?
+  @ResponseStatus(code = HttpStatus.NO_CONTENT)
+  //wirklich so gewollt? JA, denn man würde bei 200 ein Body erwarten....
   @Operation(summary = "Delete an AD from Notepad of a given user")
   @ApiResponses({
       @ApiResponse(responseCode = "204", content = @Content,

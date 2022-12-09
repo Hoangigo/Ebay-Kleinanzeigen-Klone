@@ -13,7 +13,7 @@ public class NotepadGetDTO {
   @EqualsAndHashCode.Include
   private Integer id;
 
-  @Valid  //TODO hier nicht benötigt da nur zum Output, oder?
+  @Valid  //hier nicht benötigt da nur zum Output, oder? //nicht wirklich, aber rein lassen
   private AdvertisementDTO advertisement;
 
   private String note;
