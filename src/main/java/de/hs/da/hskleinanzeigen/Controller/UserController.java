@@ -6,6 +6,8 @@ import de.hs.da.hskleinanzeigen.Mapper.UserMapper;
 import de.hs.da.hskleinanzeigen.Repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,9 +48,15 @@ public class UserController {
   @ResponseStatus(code = HttpStatus.CREATED)
   @Operation(summary = "Create a new user")
   @ApiResponses({ //
-      @ApiResponse(responseCode = "201", description = "A new user has been created"),
+      @ApiResponse(responseCode = "201", description = "A new user has been created",
+          content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = UserDTO.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "Payload incomplete or validation failed", content = @Content),
       @ApiResponse(responseCode = "409",
-          description = "The given email is already used by an other User")})
+          description = "The given email is already used by an other User", content = @Content)})
   public UserDTO createUser(@Parameter(description = "Infos of the user to be created")
   @RequestBody @Valid UserDTO userDTO) {
     Optional<User> doubleEmail = userRepository.findByEmail(userDTO.getEmail());
@@ -63,7 +71,7 @@ public class UserController {
   @Operation(summary = "Returns a specific user by its identifier.")
   @ApiResponses({ //
       @ApiResponse(responseCode = "200", description = "User with the given id was found"),
-      @ApiResponse(responseCode = "404", description = "No user found")
+      @ApiResponse(responseCode = "404", description = "No user found", content = @Content)
   })
   public UserDTO readOneUser(
       @Parameter(description = "id of user to be searched") @PathVariable final Integer id) {
@@ -78,9 +86,11 @@ public class UserController {
   @Operation(summary = "Returns a Page of users.")
   @ApiResponses({ //
       @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "204", description = "Such User entries not found"),
+      @ApiResponse(responseCode = "204", description = "Such User entries not found",
+          content = @Content),
       @ApiResponse(responseCode = "400",
-          description = "Parameter are not valid! Notice: size > 1 and start >= 0")})
+          description = "Parameter are not valid! Notice: size > 1 and start >= 0",
+          content = @Content)})
   public Page<UserDTO> readUsers(
       @Parameter(description = "index of the page to be shown")
       @RequestParam(name = "pageStart", required = true) int pageStart,
