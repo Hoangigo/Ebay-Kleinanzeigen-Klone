@@ -11,6 +11,7 @@ import de.hs.da.hskleinanzeigen.Repository.NotepadRepository;
 import de.hs.da.hskleinanzeigen.Repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -96,7 +97,7 @@ public class NotepadController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Return the whole Notepad of the given user",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = NotepadGetDTO.class))}),
+              array = @ArraySchema(schema = @Schema(implementation = NotepadGetDTO.class)))}),
       @ApiResponse(responseCode = "404",
           description = "User with the given id not found", content = @Content),
       @ApiResponse(responseCode = "204", content = @Content,

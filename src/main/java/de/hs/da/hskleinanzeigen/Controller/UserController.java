@@ -1,11 +1,13 @@
 package de.hs.da.hskleinanzeigen.Controller;
 
+import de.hs.da.hskleinanzeigen.DTO.AdvertisementDTO;
 import de.hs.da.hskleinanzeigen.DTO.UserDTO;
 import de.hs.da.hskleinanzeigen.Entities.User;
 import de.hs.da.hskleinanzeigen.Mapper.UserMapper;
 import de.hs.da.hskleinanzeigen.Repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -70,7 +72,9 @@ public class UserController {
   @GetMapping(produces = "application/json", path = "/{id}")
   @Operation(summary = "Returns a specific user by its identifier.")
   @ApiResponses({ //
-      @ApiResponse(responseCode = "200", description = "User with the given id was found"),
+      @ApiResponse(responseCode = "200", description = "User with the given id was found",
+          content = { @Content(mediaType = "application/json",
+              schema = @Schema(implementation = UserDTO.class))}),
       @ApiResponse(responseCode = "404", description = "No user found", content = @Content)
   })
   public UserDTO readOneUser(
@@ -85,7 +89,10 @@ public class UserController {
   @GetMapping(produces = "application/json", path = "")
   @Operation(summary = "Returns a Page of users.")
   @ApiResponses({ //
-      @ApiResponse(responseCode = "200", description = "OK"),
+      @ApiResponse(responseCode = "200", description = "OK",
+          content = {@Content(mediaType = "application/json",
+                  array = @ArraySchema(schema = @Schema(implementation = UserDTO.class)))
+          }),
       @ApiResponse(responseCode = "204", description = "Such User entries not found",
           content = @Content),
       @ApiResponse(responseCode = "400",
