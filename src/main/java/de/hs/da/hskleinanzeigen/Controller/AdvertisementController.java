@@ -11,6 +11,13 @@ import de.hs.da.hskleinanzeigen.Mapper.UserMapper;
 import de.hs.da.hskleinanzeigen.Repository.AdvertisementRepository;
 import de.hs.da.hskleinanzeigen.Repository.CategoryRepository;
 import de.hs.da.hskleinanzeigen.Repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +38,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(path = "/api/advertisements")
+@Tag(name = "Advertisement", description = "Read, set, update and delete Advertisements and their properties")
 public class AdvertisementController {
 
   private final AdvertisementRepository advertisementRepository;
@@ -57,7 +65,15 @@ public class AdvertisementController {
 
 
   @GetMapping(produces = "application/json", path = "/{id}")
-  public AdvertisementDTO readOneAdvertisement(@PathVariable Integer id) {
+  @Operation(summary = "Get Advertisement by its id")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Return the searched Advertisement",
+          content = { @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = AdvertisementDTO.class))}),
+      @ApiResponse(responseCode = "404", content = @Content,
+          description = "Advertisement with this id not found")})
+  public AdvertisementDTO readOneAdvertisement(
+      @Parameter(description = "id of the AD to be searched for") @PathVariable Integer id) {
     Optional<Advertisement> advertisement = advertisementRepository.findById(id);
     if (advertisement.isPresent()) {
       return adMapper.toADDTO(advertisement.get());
@@ -66,12 +82,27 @@ public class AdvertisementController {
   }
 
   @GetMapping(produces = "application/json")
+  @Operation(summary = "Get a Page of Advertisements")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Return Page of Advertisements",
+          content = { @Content(mediaType = "application/json",
+              schema = @Schema(implementation = AdvertisementDTO.class))}),
+      @ApiResponse(responseCode = "204", content = @Content,
+          description = "Such Advertisement entries not found"),
+      @ApiResponse(responseCode = "400", content = @Content,
+          description = "Parameter are not valid! Notice: size > 1 and start >= 0")})
   public Page<AdvertisementDTO> readAdvertisements(
+      @Parameter(description = "Type of Advertisement, you searched for")
       @RequestParam(name = "type", required = false) AD_TYPE type,
+      @Parameter(description = "Category of Advertisement, you searched for")
       @RequestParam(name = "category", required = false) Integer category,
+      @Parameter(description = "Min. price of Advertisement, you searched for")
       @RequestParam(name = "priceFrom", required = false) Integer priceFrom,
+      @Parameter(description = "Max. price of Advertisement, you searched for")
       @RequestParam(name = "priceTo", required = false) Integer priceTo,
+      @Parameter(description = "index of the page to be shown")
       @RequestParam(name = "pageStart", required = true) Integer pageStart,
+      @Parameter(description = "maximal number of advertisements on a page")
       @RequestParam(name = "pageSize", required = true) Integer pageSize) {
 
     if ((pageSize < 1) || (pageStart < 0)) {
@@ -87,7 +118,7 @@ public class AdvertisementController {
         priceFrom, priceTo);
 
     if (result.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Such User entries not found");
+      throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Such Advertisement entries not found");
     }
 
     return result.map(advertisement -> adMapper.toADDTO(advertisement));
@@ -96,6 +127,15 @@ public class AdvertisementController {
 
   @PostMapping(consumes = "application/json")
   @ResponseStatus(code = HttpStatus.CREATED)
+  @Operation(summary = "Create a new Advertisement")
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "New Advertisement has been created",
+          content = { @Content(mediaType = "application/json",
+              schema = @Schema(implementation = AdvertisementDTO.class))}),
+      @ApiResponse(responseCode = "204", content = @Content,
+          description = "Such Advertisement entries not found"),
+      @ApiResponse(responseCode = "400", content = @Content,
+          description = "User or Category with the given id not found OR payload incomplete")})
   public AdvertisementDTO createAdvertisement(@RequestBody @Valid AdvertisementDTO advertisementDTO) {
     Optional<Category> category = categoryRepository.findById(advertisementDTO.getCategory().getId());
     if (category.isPresent()) {
