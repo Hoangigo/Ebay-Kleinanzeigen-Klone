@@ -1,6 +1,6 @@
-package de.hs.da.hskleinanzeigen.DTO;
+package de.hs.da.hskleinanzeigen.dto;
 
-import de.hs.da.hskleinanzeigen.Entities.Advertisement;
+import de.hs.da.hskleinanzeigen.entities.Advertisement;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotEmpty;

@@ -1,7 +1,7 @@
-package de.hs.da.hskleinanzeigen.Mapper;
+package de.hs.da.hskleinanzeigen.mapper;
 
-import de.hs.da.hskleinanzeigen.DTO.CategoryDTO;
-import de.hs.da.hskleinanzeigen.Entities.Category;
+import de.hs.da.hskleinanzeigen.dto.CategoryDTO;
+import de.hs.da.hskleinanzeigen.entities.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

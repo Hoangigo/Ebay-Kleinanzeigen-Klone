@@ -1,8 +1,8 @@
-package de.hs.da.hskleinanzeigen.Mapper;
+package de.hs.da.hskleinanzeigen.mapper;
 
-import de.hs.da.hskleinanzeigen.DTO.NotepadGetDTO;
-import de.hs.da.hskleinanzeigen.DTO.NotepadPutDTO;
-import de.hs.da.hskleinanzeigen.Entities.Notepad;
+import de.hs.da.hskleinanzeigen.dto.NotepadGetDTO;
+import de.hs.da.hskleinanzeigen.dto.NotepadPutDTO;
+import de.hs.da.hskleinanzeigen.entities.Notepad;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

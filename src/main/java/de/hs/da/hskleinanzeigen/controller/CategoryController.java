@@ -1,9 +1,9 @@
-package de.hs.da.hskleinanzeigen.Controller;
+package de.hs.da.hskleinanzeigen.controller;
 
-import de.hs.da.hskleinanzeigen.DTO.CategoryDTO;
-import de.hs.da.hskleinanzeigen.Entities.Category;
-import de.hs.da.hskleinanzeigen.Mapper.CategoryMapper;
-import de.hs.da.hskleinanzeigen.Repository.CategoryRepository;
+import de.hs.da.hskleinanzeigen.dto.CategoryDTO;
+import de.hs.da.hskleinanzeigen.entities.Category;
+import de.hs.da.hskleinanzeigen.mapper.CategoryMapper;
+import de.hs.da.hskleinanzeigen.repository.CategoryRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

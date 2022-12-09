@@ -1,6 +1,6 @@
-package de.hs.da.hskleinanzeigen.Repository;
+package de.hs.da.hskleinanzeigen.repository;
 
-import de.hs.da.hskleinanzeigen.Entities.Notepad;
+import de.hs.da.hskleinanzeigen.entities.Notepad;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;

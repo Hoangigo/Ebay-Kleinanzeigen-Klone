@@ -1,4 +1,4 @@
-package de.hs.da.hskleinanzeigen.Security;
+package de.hs.da.hskleinanzeigen.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

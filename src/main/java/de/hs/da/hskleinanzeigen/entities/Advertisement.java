@@ -1,4 +1,4 @@
-package de.hs.da.hskleinanzeigen.Entities;
+package de.hs.da.hskleinanzeigen.entities;
 
 import java.sql.Timestamp;
 import javax.persistence.Column;
@@ -15,7 +15,6 @@ import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "AD")

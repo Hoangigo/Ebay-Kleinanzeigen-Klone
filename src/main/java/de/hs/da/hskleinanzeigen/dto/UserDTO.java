@@ -1,4 +1,4 @@
-package de.hs.da.hskleinanzeigen.DTO;
+package de.hs.da.hskleinanzeigen.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.Email;

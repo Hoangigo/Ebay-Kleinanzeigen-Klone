@@ -1,14 +1,14 @@
-package de.hs.da.hskleinanzeigen.Controller;
+package de.hs.da.hskleinanzeigen.controller;
 
-import de.hs.da.hskleinanzeigen.DTO.NotepadGetDTO;
-import de.hs.da.hskleinanzeigen.DTO.NotepadPutDTO;
-import de.hs.da.hskleinanzeigen.Entities.Advertisement;
-import de.hs.da.hskleinanzeigen.Entities.Notepad;
-import de.hs.da.hskleinanzeigen.Entities.User;
-import de.hs.da.hskleinanzeigen.Mapper.NotepadMapper;
-import de.hs.da.hskleinanzeigen.Repository.AdvertisementRepository;
-import de.hs.da.hskleinanzeigen.Repository.NotepadRepository;
-import de.hs.da.hskleinanzeigen.Repository.UserRepository;
+import de.hs.da.hskleinanzeigen.dto.NotepadGetDTO;
+import de.hs.da.hskleinanzeigen.dto.NotepadPutDTO;
+import de.hs.da.hskleinanzeigen.entities.Advertisement;
+import de.hs.da.hskleinanzeigen.entities.Notepad;
+import de.hs.da.hskleinanzeigen.entities.User;
+import de.hs.da.hskleinanzeigen.mapper.NotepadMapper;
+import de.hs.da.hskleinanzeigen.repository.AdvertisementRepository;
+import de.hs.da.hskleinanzeigen.repository.NotepadRepository;
+import de.hs.da.hskleinanzeigen.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

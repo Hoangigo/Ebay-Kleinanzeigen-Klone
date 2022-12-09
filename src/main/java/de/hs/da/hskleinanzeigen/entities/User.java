@@ -1,4 +1,4 @@
-package de.hs.da.hskleinanzeigen.Entities;
+package de.hs.da.hskleinanzeigen.entities;
 
 
 import java.sql.Timestamp;

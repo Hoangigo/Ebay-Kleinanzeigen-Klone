@@ -1,7 +1,7 @@
-package de.hs.da.hskleinanzeigen.Repository;
+package de.hs.da.hskleinanzeigen.repository;
 
-import de.hs.da.hskleinanzeigen.Entities.Advertisement;
-import de.hs.da.hskleinanzeigen.Entities.Advertisement.AD_TYPE;
+import de.hs.da.hskleinanzeigen.entities.Advertisement;
+import de.hs.da.hskleinanzeigen.entities.Advertisement.AD_TYPE;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;

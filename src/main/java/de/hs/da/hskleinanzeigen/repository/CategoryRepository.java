@@ -1,6 +1,6 @@
-package de.hs.da.hskleinanzeigen.Repository;
+package de.hs.da.hskleinanzeigen.repository;
 
-import de.hs.da.hskleinanzeigen.Entities.Category;
+import de.hs.da.hskleinanzeigen.entities.Category;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
