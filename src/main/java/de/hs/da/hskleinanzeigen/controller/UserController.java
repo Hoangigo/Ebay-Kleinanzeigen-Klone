@@ -4,6 +4,7 @@ import de.hs.da.hskleinanzeigen.dto.UserDTO;
 import de.hs.da.hskleinanzeigen.entities.User;
 import de.hs.da.hskleinanzeigen.mapper.UserMapper;
 import de.hs.da.hskleinanzeigen.repository.UserRepository;
+import de.hs.da.hskleinanzeigen.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -36,12 +37,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserController {
 
 
-  private final UserRepository userRepository;
+  private final UserService userService;
   private final UserMapper userMapper;
 
   @Autowired
-  public UserController(UserRepository userRepository, UserMapper userMapper) {
-    this.userRepository = userRepository;
+  public UserController(UserService userService, UserMapper userMapper) {
+    this.userService = userService;
     this.userMapper = userMapper;
   }
 
@@ -60,29 +61,21 @@ public class UserController {
           description = "The given email is already used by an other User", content = @Content)})
   public UserDTO createUser(@Parameter(description = "Infos of the user to be created")
   @RequestBody @Valid UserDTO userDTO) {
-    Optional<User> doubleEmail = userRepository.findByEmail(userDTO.getEmail());
-    if (doubleEmail.isPresent()) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT,
-          "This email is already used by an other User");
-    }
-    return userMapper.toUserDTO(userRepository.save(userMapper.toUserEntity(userDTO)));
+
+    return userMapper.toUserDTO(userService.createUser(userMapper.toUserEntity(userDTO)));
   }
 
   @GetMapping(produces = "application/json", path = "/{id}")
   @Operation(summary = "Returns a specific user by its identifier.")
   @ApiResponses({ //
       @ApiResponse(responseCode = "200", description = "User with the given id was found",
-          content = { @Content(mediaType = "application/json",
+          content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = UserDTO.class))}),
       @ApiResponse(responseCode = "404", description = "No user found", content = @Content)
   })
   public UserDTO readOneUser(
       @Parameter(description = "id of user to be searched") @PathVariable final Integer id) {
-    Optional<User> user = (userRepository.findById(id));
-    if (user.isPresent()) {
-      return userMapper.toUserDTO(user.get());
-    }
-    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found");
+    return userMapper.toUserDTO(userService.readOneUser(id));
   }
 
   @GetMapping(produces = "application/json", path = "")
@@ -90,7 +83,7 @@ public class UserController {
   @ApiResponses({ //
       @ApiResponse(responseCode = "200", description = "OK",
           content = {@Content(mediaType = "application/json",
-                  array = @ArraySchema(schema = @Schema(implementation = UserDTO.class)))
+              array = @ArraySchema(schema = @Schema(implementation = UserDTO.class)))
           }),
       @ApiResponse(responseCode = "204", description = "Such User entries not found",
           content = @Content),
@@ -102,20 +95,8 @@ public class UserController {
       @RequestParam(name = "pageStart", required = true) int pageStart,
       @Parameter(description = "maximal number of users on a Page")
       @RequestParam(name = "pageSize", required = true) int pageSize) {
-    if ((pageSize < 1) || (pageStart < 0)) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "Parameter are not valid! Notice: size > 1 and start >= 0");
-    }
 
-    Pageable indexOfPageAndNumberOfElements = PageRequest.of(pageStart, pageSize,
-        Sort.by("created").ascending());
-
-    Page<User> result = userRepository.findAll(indexOfPageAndNumberOfElements);
-    if (result.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Such User entries not found");
-    }
-
-    return result.map(user -> userMapper.toUserDTO(user));
+    return userService.readUsers(pageStart, pageSize).map(user -> userMapper.toUserDTO(user));
   }
 
 }

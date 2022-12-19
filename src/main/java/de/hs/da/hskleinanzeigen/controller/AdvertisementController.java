@@ -1,16 +1,9 @@
 package de.hs.da.hskleinanzeigen.controller;
 
 import de.hs.da.hskleinanzeigen.dto.AdvertisementDTO;
-import de.hs.da.hskleinanzeigen.entities.Advertisement;
 import de.hs.da.hskleinanzeigen.entities.Advertisement.AD_TYPE;
-import de.hs.da.hskleinanzeigen.entities.Category;
-import de.hs.da.hskleinanzeigen.entities.User;
 import de.hs.da.hskleinanzeigen.mapper.AdvertisementMapper;
-import de.hs.da.hskleinanzeigen.mapper.CategoryMapper;
-import de.hs.da.hskleinanzeigen.mapper.UserMapper;
-import de.hs.da.hskleinanzeigen.repository.AdvertisementRepository;
-import de.hs.da.hskleinanzeigen.repository.CategoryRepository;
-import de.hs.da.hskleinanzeigen.repository.UserRepository;
+import de.hs.da.hskleinanzeigen.services.AdvertisementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,13 +11,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,33 +23,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(path = "/api/advertisements")
 @Tag(name = "Advertisement", description = "Read, set, update and delete Advertisements and their properties")
 public class AdvertisementController {
 
-  private final AdvertisementRepository advertisementRepository;
-  private final CategoryRepository categoryRepository;
-  private final UserRepository userRepository;
+  private final AdvertisementService advertisementService;
 
   private final AdvertisementMapper adMapper;
 
-  private final UserMapper userMapper;
-
-  private final CategoryMapper categoryMapper;
 
   @Autowired
-  public AdvertisementController(AdvertisementRepository advertisementRepository,
-      CategoryRepository categoryRepository, UserRepository userRepository,
-      AdvertisementMapper adMapper, UserMapper userMapper, CategoryMapper categoryMapper) {
-    this.advertisementRepository = advertisementRepository;
-    this.categoryRepository = categoryRepository;
-    this.userRepository = userRepository;
+  public AdvertisementController(AdvertisementService advertisementService,
+      AdvertisementMapper adMapper) {
     this.adMapper = adMapper;
-    this.userMapper = userMapper;
-    this.categoryMapper = categoryMapper;
+    this.advertisementService = advertisementService;
   }
 
 
@@ -68,24 +46,20 @@ public class AdvertisementController {
   @Operation(summary = "Get Advertisement by its id")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Return the searched Advertisement",
-          content = { @Content(mediaType = "application/json",
-                  schema = @Schema(implementation = AdvertisementDTO.class))}),
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = AdvertisementDTO.class))}),
       @ApiResponse(responseCode = "404", content = @Content,
           description = "Advertisement with this id not found")})
   public AdvertisementDTO readOneAdvertisement(
       @Parameter(description = "id of the AD to be searched for") @PathVariable Integer id) {
-    Optional<Advertisement> advertisement = advertisementRepository.findById(id);
-    if (advertisement.isPresent()) {
-      return adMapper.toADDTO(advertisement.get());
-    }
-    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Advertisement with this id not found");
+    return adMapper.toADDTO(advertisementService.readOneAdvertisement(id));
   }
 
   @GetMapping(produces = "application/json")
   @Operation(summary = "Get a Page of Advertisements")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Return Page of Advertisements",
-          content = { @Content(mediaType = "application/json",
+          content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = AdvertisementDTO.class))}),
       @ApiResponse(responseCode = "204", content = @Content,
           description = "Such Advertisement entries not found"),
@@ -105,23 +79,8 @@ public class AdvertisementController {
       @Parameter(description = "maximal number of advertisements on a page")
       @RequestParam(name = "pageSize", required = true) Integer pageSize) {
 
-    if ((pageSize < 1) || (pageStart < 0)) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "Parameter are not valid! Notice: size > 1 and start >= 0");
-    }
-
-    Pageable indexOfPageAndNumberOfElements = PageRequest.of(pageStart, pageSize,
-        Sort.by("created").ascending());
-
-    Page<Advertisement> result = advertisementRepository.findAdvertisements(
-        indexOfPageAndNumberOfElements, type, category,
-        priceFrom, priceTo);
-
-    if (result.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Such Advertisement entries not found");
-    }
-
-    return result.map(advertisement -> adMapper.toADDTO(advertisement));
+    return advertisementService.readAdvertisements(type, category, priceFrom, priceTo, pageStart,
+        pageSize).map(advertisement -> adMapper.toADDTO(advertisement));
   }
 
 
@@ -130,31 +89,19 @@ public class AdvertisementController {
   @Operation(summary = "Create a new Advertisement")
   @ApiResponses({
       @ApiResponse(responseCode = "201", description = "New Advertisement has been created",
-          content = { @Content(mediaType = "application/json",
+          content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = AdvertisementDTO.class))}),
       @ApiResponse(responseCode = "204", content = @Content,
           description = "Such Advertisement entries not found"),
       @ApiResponse(responseCode = "400", content = @Content,
           description = "User or Category with the given id not found OR payload incomplete")})
-  public AdvertisementDTO createAdvertisement(@RequestBody @Valid AdvertisementDTO advertisementDTO) {
-    Optional<Category> category = categoryRepository.findById(advertisementDTO.getCategory().getId());
-    if (category.isPresent()) {
-      Optional<User> user = userRepository.findById(advertisementDTO.getUser().getId());
-      if (user.isPresent()) {
-        advertisementDTO.setUser(userMapper.toUserDTO(user.get()));
-        advertisementDTO.setCategory(categoryMapper.toCategoryDTO(category.get()));
-        return adMapper.toADDTO(advertisementRepository.save(adMapper.toADEntity(advertisementDTO)));
-      }
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "User with the given id not found, so we can create a new Advertisement");
-    }
-
-    //return advertisementRepository.findById(advertisement.getId()).get();
-    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-        "Category with the given id not found, so we can create a new Advertisement");
+  public AdvertisementDTO createAdvertisement(
+      @RequestBody @Valid AdvertisementDTO advertisementDTO) {
+    return adMapper.toADDTO(
+        advertisementService.createAdvertisement(adMapper.toADEntity(advertisementDTO)));
   }
 
-  private Page<Advertisement> selectRightQuery(Pageable indexOfPageAndNumberOfElements,
+  /*private Page<Advertisement> selectRightQuery(Pageable indexOfPageAndNumberOfElements,
       Optional<String> typ, Optional<Integer> categor, Optional<Integer> priceFro,
       Optional<Integer> priceToo) {
 
@@ -266,7 +213,7 @@ public class AdvertisementController {
         }
       }
     }
-  }
+  }*/
 
 
 }
