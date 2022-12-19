@@ -2,13 +2,8 @@ package de.hs.da.hskleinanzeigen.controller;
 
 import de.hs.da.hskleinanzeigen.dto.NotepadGetDTO;
 import de.hs.da.hskleinanzeigen.dto.NotepadPutDTO;
-import de.hs.da.hskleinanzeigen.entities.Advertisement;
-import de.hs.da.hskleinanzeigen.entities.Notepad;
-import de.hs.da.hskleinanzeigen.entities.User;
 import de.hs.da.hskleinanzeigen.mapper.NotepadMapper;
-import de.hs.da.hskleinanzeigen.repository.AdvertisementRepository;
-import de.hs.da.hskleinanzeigen.repository.NotepadRepository;
-import de.hs.da.hskleinanzeigen.repository.UserRepository;
+import de.hs.da.hskleinanzeigen.services.NotepadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -18,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +24,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @Tag(name = "Notepad", description = "Read, set and update Notepad, also delete entry from Notepad")
 public class NotepadController {
 
-  private final NotepadRepository notepadRepository;
-  private final UserRepository userRepository;
+  private final NotepadService notepadService;
   private final NotepadMapper notepadMapper;
-  private final AdvertisementRepository adRepository;
 
   @Autowired
-  public NotepadController(NotepadRepository notepadRepository, NotepadMapper notepadMapper,
-      UserRepository userRepository, AdvertisementRepository adRepository) {
-    this.notepadRepository = notepadRepository;
+  public NotepadController(NotepadService notepadService, NotepadMapper notepadMapper) {
+    this.notepadService = notepadService;
     this.notepadMapper = notepadMapper;
-    this.userRepository = userRepository;
-    this.adRepository = adRepository;
   }
 
   @PutMapping(consumes = "application/json", path = "/api/users/{userId}/notepad")
@@ -63,33 +51,7 @@ public class NotepadController {
   public NotepadPutDTO addADtoNotepad(@Valid @RequestBody NotepadPutDTO note,
       @Parameter(description = "id of user whom notepad should be updated")
       @PathVariable Integer userId) {
-    Optional<User> user = userRepository.findById(userId);
-    if (user.isPresent()) {
-      Optional<Advertisement> advertisement = adRepository.findById(note.getAdvertisementId());
-      if (advertisement.isPresent()) {
-        Optional<Notepad> notepadOptional = notepadRepository.findByUserIdAndAdId(userId,
-            note.getAdvertisementId());
-        if (notepadOptional.isPresent()) { //AD schon vorhanden!!! nur note  updaten?
-          //TODO Mit Blick auf performance, besser eigene update schreiben? and existById statt findById?
-          Notepad notepad = notepadOptional.get();
-          notepad.setNote(note.getNote());
-          return notepadMapper.toNotepadPutDTO(notepadRepository.save(notepad));
-        } else {
-          Notepad notepad = new Notepad();
-          notepad.setAdvertisement(advertisement.get());
-          notepad.setUser(user.get());
-          notepad.setNote(note.getNote());
-          notepad.setCreated(new java.sql.Timestamp(System.currentTimeMillis()));
-          return notepadMapper.toNotepadPutDTO(notepadRepository.save(notepad));
-        }
-      } else {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-            "Advertisement with the given id not found");
-      }
-    } else {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          "User with the given id not found");
-    }
+    return notepadMapper.toNotepadPutDTO(notepadService.addADtoNotepad(note, userId));
   }
 
   @GetMapping(path = "/api/users/{userId}/notepad", produces = "application/json")
@@ -104,18 +66,10 @@ public class NotepadController {
           description = "No entry found on notepad for the given user")})
   public List<NotepadGetDTO> getNotepadByUser(@Parameter(description = "id of user")
   @PathVariable Integer userId) {
-    //Optional<User> user = userRepository.findById(userId);
-    //untere Variante performanter? JA, exits lädt nicht das ganze
-    if (userRepository.existsById(userId)) {
-      List<Notepad> notepadList = notepadRepository.findByUserId(userId);
-      if (!notepadList.isEmpty()) {
-        return notepadList.stream()
-            .map(notepad -> notepadMapper.toNotepadGetDTO(notepad)).collect(Collectors.toList());
-      }
-      throw new ResponseStatusException(HttpStatus.NO_CONTENT,
-          "No entry found on notepad for the given user");
-    }
-    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found");
+
+    return notepadService.getNotepadByUser(userId).stream()
+        .map(notepad -> notepadMapper.toNotepadGetDTO(notepad)).collect(Collectors.toList());
+
   }
 
 
@@ -130,21 +84,9 @@ public class NotepadController {
           description = "User or Advertisement with the given id not found", content = @Content)})
   public void deleteNotepad(
       @Parameter(description = "id of user") @PathVariable Integer userId,
-      @Parameter(description = "id of the advertisement to be deleted") @PathVariable Integer adId){
-    //Optional<User> user = userRepository.findById(userId);
-    //if (user.isPresent()) {
-    if (userRepository.existsById(userId)) {
-      //Optional<Advertisement> advertisement = adRepository.findById(adId);
-      if (adRepository.existsById(adId)) {
-        //Optional<Notepad> notepad = notepadRepository.findByUserIdAndAdId(userId,adId);
-        //
-        notepadRepository.deleteByUserIdAndAdId(userId, adId);
-        return;
-      }
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-          "Advertisement with the given id not found");
-    }
-    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found");
+      @Parameter(description = "id of the advertisement to be deleted") @PathVariable Integer adId) {
+
+    notepadService.deleteNotepad(userId, adId);
   }
 
 }
