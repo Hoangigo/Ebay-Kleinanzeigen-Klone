@@ -191,7 +191,7 @@
             </goals>
             <configuration>
               <excludes>
-                <exclude>de/hs/da/hskleinanzeigen/mapper/*</exclude>
+               <!-- <exclude>de/hs/da/hskleinanzeigen/mapper/*</exclude>-->
               </excludes>
             </configuration>
           </execution>
@@ -209,8 +209,8 @@
                     <exclude>de/hs/da/hskleinanzeigen/mapper/*</exclude>
                     <exclude>de/hs/da/hskleinanzeigen/dto/*</exclude>
                     <exclude>de/hs/da/hskleinanzeigen/repository/*</exclude>
-                   <!-- <exclude>*Test</exclude>
-                    <exclude>*erIT</exclude>-->
+                    <exclude>*Test</exclude>
+                    <!--<exclude>*erIT</exclude>-->
                   </excludes>
                   <limits>
                     <limit>
