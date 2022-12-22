@@ -201,14 +201,13 @@
               <goal>check</goal>
             </goals>
             <configuration>
-
               <rules>
                 <rule>
                   <!-- The set of counter limits would have to be met at the application as a whole-->
                   <element>BUNDLE</element>
-                  <!-- <excludes>
-                       <exclude>de.hs.da</exclude>
-                   </excludes>-->
+                  <excludes>
+                    <exclude>de/hs/da/hskleinanzeigen/mapper/*</exclude>
+                  </excludes>
                   <limits>
                     <limit>
                       <counter>BRANCH</counter>
