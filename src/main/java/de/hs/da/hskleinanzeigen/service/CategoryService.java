@@ -1,16 +1,11 @@
-package de.hs.da.hskleinanzeigen.services;
+package de.hs.da.hskleinanzeigen.service;
 
-import de.hs.da.hskleinanzeigen.dto.CategoryDTO;
 import de.hs.da.hskleinanzeigen.entities.Category;
-import de.hs.da.hskleinanzeigen.mapper.CategoryMapper;
 import de.hs.da.hskleinanzeigen.repository.CategoryRepository;
 import java.util.Optional;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service

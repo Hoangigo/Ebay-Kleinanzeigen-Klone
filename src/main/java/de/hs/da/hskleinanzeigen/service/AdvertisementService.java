@@ -1,4 +1,4 @@
-package de.hs.da.hskleinanzeigen.services;
+package de.hs.da.hskleinanzeigen.service;
 
 import de.hs.da.hskleinanzeigen.entities.Advertisement;
 import de.hs.da.hskleinanzeigen.entities.Advertisement.AD_TYPE;
@@ -39,7 +39,7 @@ public class AdvertisementService {
       final Integer priceFrom, final Integer priceTo, final Integer pageStart,
       final Integer pageSize) throws ResponseStatusException {
 
-    if ((pageSize < 1) || (pageStart < 0)) {
+    if (pageSize < 1 || pageStart < 0) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "Parameter are not valid! Notice: size > 1 and start >= 0");
     }

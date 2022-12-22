@@ -1,4 +1,4 @@
-package de.hs.da.hskleinanzeigen.services;
+package de.hs.da.hskleinanzeigen.service;
 
 import de.hs.da.hskleinanzeigen.entities.User;
 import de.hs.da.hskleinanzeigen.repository.UserRepository;
@@ -28,15 +28,15 @@ public class UserService {
   }
 
   public User readOneUser(final Integer id) throws ResponseStatusException {
-    Optional<User> user = (userRepository.findById(id));
+    Optional<User> user = userRepository.findById(id);
     if (user.isPresent()) {
-      return (user.get());
+      return user.get();
     }
     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with the given id not found");
   }
 
   public Page<User> readUsers(int pageStart, int pageSize) throws ResponseStatusException {
-    if ((pageSize < 1) || (pageStart < 0)) {
+    if (pageSize < 1 || pageStart < 0) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "Parameter are not valid! Notice: size > 1 and start >= 0");
     }
