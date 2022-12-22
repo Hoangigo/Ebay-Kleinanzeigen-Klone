@@ -2,7 +2,7 @@ package de.hs.da.hskleinanzeigen.controller;
 
 import de.hs.da.hskleinanzeigen.dto.CategoryDTO;
 import de.hs.da.hskleinanzeigen.mapper.CategoryMapper;
-import de.hs.da.hskleinanzeigen.services.CategoryService;
+import de.hs.da.hskleinanzeigen.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
