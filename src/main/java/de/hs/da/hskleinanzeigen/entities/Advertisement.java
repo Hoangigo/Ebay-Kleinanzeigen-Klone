@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -63,13 +64,14 @@ import lombok.NoArgsConstructor;
         + " a.price >= :pf ")
 
 @NamedQuery(name = "Advertisement.findAdvertisements",
-query = "SELECT a FROM Advertisement a "
-    + "WHERE (:t is null OR a.type = :t) AND "
-    + "(:c is null OR a.category.id = :c ) AND "
-    + "(:pt is null  OR a.price <= :pt) AND "
-    + "(:pf is null OR a.price >= :pf)")
+    query = "SELECT a FROM Advertisement a "
+        + "WHERE (:t is null OR a.type = :t) AND "
+        + "(:c is null OR a.category.id = :c ) AND "
+        + "(:pt is null  OR a.price <= :pt) AND "
+        + "(:pf is null OR a.price >= :pf)")
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Advertisement {
