@@ -207,6 +207,8 @@
                   <element>BUNDLE</element>
                   <excludes>
                     <exclude>de/hs/da/hskleinanzeigen/mapper/*</exclude>
+                    <exclude>de/hs/da/hskleinanzeigen/dto/*</exclude>
+                    <exclude>*Test</exclude>
                   </excludes>
                   <limits>
                     <limit>
