@@ -206,7 +206,7 @@
                   <!-- The set of counter limits would have to be met at the application as a whole-->
                   <element>BUNDLE</element>
                   <excludes>
-                    <!--<exclude>de/hs/da/hskleinanzeigen/mapper/*</exclude>-->
+                    <exclude>de/hs/da/hskleinanzeigen/mapper/*</exclude>
                     <exclude>de/hs/da/hskleinanzeigen/dto/*</exclude>
                     <exclude>de/hs/da/hskleinanzeigen/repository/*</exclude>
                    <!-- <exclude>*Test</exclude>
