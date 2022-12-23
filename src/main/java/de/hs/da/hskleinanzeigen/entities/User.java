@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "`USER`")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @EqualsAndHashCode.Include

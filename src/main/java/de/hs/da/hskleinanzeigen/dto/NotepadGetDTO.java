@@ -1,12 +1,14 @@
 package de.hs.da.hskleinanzeigen.dto;
 
 import javax.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class NotepadGetDTO {
 

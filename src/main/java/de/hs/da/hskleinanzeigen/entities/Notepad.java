@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -17,12 +18,13 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "NOTEPAD")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NamedQuery(name = "Notepad.findByUserIdAndAdId",
-query = "SELECT n FROM Notepad n WHERE n.advertisement.id = :adId AND n.user.id = :userId")
+    query = "SELECT n FROM Notepad n WHERE n.advertisement.id = :adId AND n.user.id = :userId")
 @NamedQuery(name = "Notepad.deleteByUserIdAndAdId",
-query = "DELETE FROM Notepad n WHERE n.user.id = :userId AND n.advertisement.id = :adId")
+    query = "DELETE FROM Notepad n WHERE n.user.id = :userId AND n.advertisement.id = :adId")
 
 public class Notepad {
 

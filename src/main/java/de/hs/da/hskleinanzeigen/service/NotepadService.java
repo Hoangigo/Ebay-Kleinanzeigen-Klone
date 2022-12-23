@@ -1,4 +1,4 @@
-package de.hs.da.hskleinanzeigen.services;
+package de.hs.da.hskleinanzeigen.service;
 
 import de.hs.da.hskleinanzeigen.dto.NotepadPutDTO;
 import de.hs.da.hskleinanzeigen.entities.Advertisement;

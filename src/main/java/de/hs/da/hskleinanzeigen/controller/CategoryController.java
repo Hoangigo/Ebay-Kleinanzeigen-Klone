@@ -2,7 +2,7 @@ package de.hs.da.hskleinanzeigen.controller;
 
 import de.hs.da.hskleinanzeigen.dto.CategoryDTO;
 import de.hs.da.hskleinanzeigen.mapper.CategoryMapper;
-import de.hs.da.hskleinanzeigen.services.CategoryService;
+import de.hs.da.hskleinanzeigen.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(path = "/api/categories")
@@ -47,10 +48,21 @@ public class CategoryController {
           content = @Content),
       @ApiResponse(responseCode = "409",
           description = "Category with the given name already exists", content = @Content)})
-  public CategoryDTO createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
-
-    return
-        categoryMapper.toCategoryDTO(
-            categoryService.createCategory(categoryMapper.toCategoryEntity(categoryDTO)));
+  public CategoryDTO createCategory(@RequestBody @Valid CategoryDTO categoryDTO)
+       {
+    try {
+      return
+          categoryMapper.toCategoryDTO(
+              categoryService.createCategory(categoryMapper.toCategoryEntity(categoryDTO)));
+    } catch (Exception e) {
+      if (e.getMessage().equals(HttpStatus.CONFLICT.toString())) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT,
+            "Category with the given name already exists");
+      } else if (e.getMessage().equals(HttpStatus.BAD_REQUEST.toString())) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            "Category with the given parent id not found");
+      }
+    }
+    return null;
   }
 }

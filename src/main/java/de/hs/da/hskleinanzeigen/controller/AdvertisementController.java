@@ -3,7 +3,7 @@ package de.hs.da.hskleinanzeigen.controller;
 import de.hs.da.hskleinanzeigen.dto.AdvertisementDTO;
 import de.hs.da.hskleinanzeigen.entities.Advertisement.AD_TYPE;
 import de.hs.da.hskleinanzeigen.mapper.AdvertisementMapper;
-import de.hs.da.hskleinanzeigen.services.AdvertisementService;
+import de.hs.da.hskleinanzeigen.service.AdvertisementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

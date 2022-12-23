@@ -3,7 +3,7 @@ package de.hs.da.hskleinanzeigen.controller;
 import de.hs.da.hskleinanzeigen.dto.NotepadGetDTO;
 import de.hs.da.hskleinanzeigen.dto.NotepadPutDTO;
 import de.hs.da.hskleinanzeigen.mapper.NotepadMapper;
-import de.hs.da.hskleinanzeigen.services.NotepadService;
+import de.hs.da.hskleinanzeigen.service.NotepadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
