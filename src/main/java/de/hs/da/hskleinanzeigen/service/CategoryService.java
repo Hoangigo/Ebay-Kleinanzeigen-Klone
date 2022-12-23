@@ -1,10 +1,11 @@
 package de.hs.da.hskleinanzeigen.service;
 
 import de.hs.da.hskleinanzeigen.entities.Category;
+import de.hs.da.hskleinanzeigen.exception.CategoryNameAlreadyExitsException;
+import de.hs.da.hskleinanzeigen.exception.PayloadIncorrectException;
 import de.hs.da.hskleinanzeigen.repository.CategoryRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,10 +14,11 @@ public class CategoryService {
 
   private final CategoryRepository categoryRepository;
 
-  public Category createCategory(Category category) throws Exception {
+  public Category createCategory(Category category) {
     Optional<Category> sameCategory = categoryRepository.findByName(category.getName());
     if (sameCategory.isPresent()) {
-      throw new Exception(HttpStatus.CONFLICT.toString());
+      throw new CategoryNameAlreadyExitsException();
+      //throw new Exception(HttpStatus.CONFLICT.toString());
           //"Category with the given name already exists");
     }
 
@@ -26,7 +28,8 @@ public class CategoryService {
       if (categoryRepository.existsById(category.getParent_id())) {
         return categoryRepository.save(category);
       } else {
-        throw new Exception(HttpStatus.BAD_REQUEST.toString());
+        throw  new PayloadIncorrectException("Category with the given parent id not found");
+       // throw new Exception(HttpStatus.BAD_REQUEST.toString());
             //"Category with the given parent id not found");
       }
     } else {

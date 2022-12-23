@@ -91,10 +91,12 @@ public class AdvertisementController {
       @ApiResponse(responseCode = "201", description = "New Advertisement has been created",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = AdvertisementDTO.class))}),
-      @ApiResponse(responseCode = "204", content = @Content,
-          description = "Such Advertisement entries not found"),
-      @ApiResponse(responseCode = "400", content = @Content,
-          description = "User or Category with the given id not found OR payload incomplete")})
+      /*@ApiResponse(responseCode = "204", content = @Content,
+          description = "Such Advertisement entries not found"),*/
+      @ApiResponse(responseCode = "404", content = @Content,
+          description = "User or Category with the given id not found"),
+      @ApiResponse(responseCode = "404", content = @Content,
+          description = "Payload incomplete or incorrect")})
   public AdvertisementDTO createAdvertisement(
       @RequestBody @Valid AdvertisementDTO advertisementDTO) {
     return adMapper.toADDTO(
