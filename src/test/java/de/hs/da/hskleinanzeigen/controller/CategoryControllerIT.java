@@ -1,6 +1,7 @@
 package de.hs.da.hskleinanzeigen.controller;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,13 +14,16 @@ import de.hs.da.hskleinanzeigen.mapper.CategoryMapper;
 import de.hs.da.hskleinanzeigen.mapper.CategoryMapperImpl;
 import de.hs.da.hskleinanzeigen.service.CategoryService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 @WebMvcTest(value = CategoryController.class)
 @Import(CategoryMapperImpl.class)
@@ -61,7 +65,7 @@ public class CategoryControllerIT {
     return user("adin").password("a").roles("Aministrator");
   }*/
 
-  @WithMockUser(username = "nein", password = "user")
+  @WithMockUser(username = "admin", password = "admin")
   //TODO wieso muss es nicht zu WebSecurity passen?
   @Test
   void createCategory_whenSucessfull() throws Exception {
@@ -76,16 +80,18 @@ public class CategoryControllerIT {
                 Category.class)).isEqualTo(generateCategory()));
   }
 
-  /*@WithMockUser(username = "test", password = "user")
+  @WithMockUser(username = "test", password = "user")
   @Test
-  void createCategory_whenPayloadIncomplete() throws Exception
-  {
-    final String content = objectMapper.writeValueAsString(CATEGORY_PAYLOAD_INCOMPLETE);
-    when(service.createCategory(generateCategory())).thenReturn(generateCategory());
+  void createCategory_whenPayloadIncomplete() throws Exception {
+    //final String content = objectMapper.writeValueAsString(CATEGORY_PAYLOAD_INCOMPLETE);
+    final String content = objectMapper.writeValueAsString(
+        categoryMapper.toCategoryDTO(generateCategory()));
+    doThrow(new Exception(HttpStatus.BAD_REQUEST.toString())).when(service)
+        .createCategory(Mockito.any());
     mvc.perform(post(BASE_PATH).with(csrf())//.with(rob())
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(content)).andExpect(status().isBadRequest())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content)).andExpect(status().isBadRequest())
         .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(
             ResponseStatusException.class));
-  }*/
+  }
 }
