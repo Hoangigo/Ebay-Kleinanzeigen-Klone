@@ -72,7 +72,6 @@ public class NotepadControllerIT {
         .andDo(print()).andExpect(status().isNotFound())
         .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(
             ResponseStatusException.class));
-    ;
   }
 
   @WithMockUser(username = "nein", password = "user")

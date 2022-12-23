@@ -1,7 +1,7 @@
 package de.hs.da.hskleinanzeigen.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import de.hs.da.hskleinanzeigen.dto.NotepadPutDTO;
 import de.hs.da.hskleinanzeigen.entities.Advertisement;
@@ -79,7 +79,7 @@ public class NotepadServiceTest {
 
     List<Notepad> result = service.getNotepadByUser(Mockito.anyInt());
 
-    assertThat(result.size()).isEqualTo(2); // TODO hasSize and contains dont work?
+    assertThat(result).hasSize(2);
     assertThat(result.get(1)).isEqualTo(n2);
 
     Mockito.verify(userRepository).existsById(Mockito.anyInt());
