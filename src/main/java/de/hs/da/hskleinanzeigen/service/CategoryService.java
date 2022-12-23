@@ -14,11 +14,11 @@ public class CategoryService {
 
   private final CategoryRepository categoryRepository;
 
-  public Category createCategory(Category category) throws ResponseStatusException {
+  public Category createCategory(Category category) throws Exception {
     Optional<Category> sameCategory = categoryRepository.findByName(category.getName());
     if (sameCategory.isPresent()) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT,
-          "Category with the given name already exists");
+      throw new Exception(HttpStatus.CONFLICT.toString());
+          //"Category with the given name already exists");
     }
 
     if (category.getParent_id() != null) {
@@ -27,8 +27,8 @@ public class CategoryService {
       if (categoryRepository.existsById(category.getParent_id())) {
         return categoryRepository.save(category);
       } else {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-            "Category with the given parent id not found");
+        throw new Exception(HttpStatus.BAD_REQUEST.toString());
+            //"Category with the given parent id not found");
       }
     } else {
       //kein Parent_id wurde angegeben

@@ -33,7 +33,6 @@ public class CategoryServiceTest {
   }
 
   @BeforeEach
-    //TODO warum klappt es mit beforeall an der Stelle nicht?
   void setUp() {
     categoryService = new CategoryService(repository);
   }
@@ -44,10 +43,10 @@ public class CategoryServiceTest {
     Mockito.when(repository.findByName(Mockito.anyString()))
         .thenReturn(Optional.of(generateCategory()));
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(Exception.class,
         () -> categoryService.createCategory(generateCategory()));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.CONFLICT);
+    assertThat(exception.getMessage()).isEqualTo(HttpStatus.CONFLICT.toString());
 
     Mockito.verify(repository).findByName(generateCategory().getName());
   }
@@ -61,16 +60,16 @@ public class CategoryServiceTest {
         .thenReturn(Optional.ofNullable(null));
     Mockito.when(repository.existsById(Mockito.anyInt())).thenReturn(false);
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(Exception.class,
         () -> categoryService.createCategory(catWithParentId));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(exception.getMessage()).isEqualTo(HttpStatus.BAD_REQUEST.toString());
 
     Mockito.verify(repository).findByName(generateCategory().getName());
   }
 
   @Test
-  void createCategory_whenEveryThingFineWithParent() {
+  void createCategory_whenEveryThingFineWithParent() throws Exception {
     Category cat = Mockito.mock(Category.class);
     Category catWithParentId = generateCategory();
     catWithParentId.setParent_id(2);
@@ -88,7 +87,7 @@ public class CategoryServiceTest {
   }
 
   @Test
-  void createCategory_whenEveryThingFineWithoutParent() {
+  void createCategory_whenEveryThingFineWithoutParent() throws Exception {
     Category cat = Mockito.mock(Category.class);
 
     Mockito.when(repository.findByName(Mockito.anyString()))
