@@ -4,6 +4,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.hs.da.hskleinanzeigen.entities.Category;
+import de.hs.da.hskleinanzeigen.exception.CategoryNameAlreadyExitsException;
+import de.hs.da.hskleinanzeigen.exception.PayloadIncorrectException;
 import de.hs.da.hskleinanzeigen.repository.CategoryRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceTest {
@@ -43,10 +43,10 @@ public class CategoryServiceTest {
     Mockito.when(repository.findByName(Mockito.anyString()))
         .thenReturn(Optional.of(generateCategory()));
 
-    Exception exception = assertThrows(Exception.class,
+    Exception exception = assertThrows(CategoryNameAlreadyExitsException.class,
         () -> categoryService.createCategory(generateCategory()));
 
-    assertThat(exception.getMessage()).isEqualTo(HttpStatus.CONFLICT.toString());
+    assertThat(exception.getMessage()).isEqualTo(CategoryNameAlreadyExitsException.outputMessage);
 
     Mockito.verify(repository).findByName(generateCategory().getName());
   }
@@ -60,16 +60,16 @@ public class CategoryServiceTest {
         .thenReturn(Optional.ofNullable(null));
     Mockito.when(repository.existsById(Mockito.anyInt())).thenReturn(false);
 
-    Exception exception = assertThrows(Exception.class,
+    Exception exception = assertThrows(PayloadIncorrectException.class,
         () -> categoryService.createCategory(catWithParentId));
 
-    assertThat(exception.getMessage()).isEqualTo(HttpStatus.BAD_REQUEST.toString());
+    //assertThat(exception.getMessage()).isEqualTo(HttpStatus.BAD_REQUEST.toString());
 
     Mockito.verify(repository).findByName(generateCategory().getName());
   }
 
   @Test
-  void createCategory_whenEveryThingFineWithParent() throws Exception {
+  void createCategory_whenEveryThingFineWithParent() {
     Category cat = Mockito.mock(Category.class);
     Category catWithParentId = generateCategory();
     catWithParentId.setParent_id(2);

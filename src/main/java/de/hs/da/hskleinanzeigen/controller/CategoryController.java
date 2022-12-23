@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(path = "/api/categories")
@@ -48,12 +47,14 @@ public class CategoryController {
           content = @Content),
       @ApiResponse(responseCode = "409",
           description = "Category with the given name already exists", content = @Content)})
-  public CategoryDTO createCategory(@RequestBody @Valid CategoryDTO categoryDTO)
-       {
-    try {
+  public CategoryDTO createCategory(@RequestBody @Valid CategoryDTO categoryDTO) {
+   // try {
       return
           categoryMapper.toCategoryDTO(
               categoryService.createCategory(categoryMapper.toCategoryEntity(categoryDTO)));
+    /*} catch (CategoryNotFoundException c) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          c.getOutputMessage());
     } catch (Exception e) {
       if (e.getMessage().equals(HttpStatus.CONFLICT.toString())) {
         throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -63,6 +64,6 @@ public class CategoryController {
             "Category with the given parent id not found");
       }
     }
-    return null;
+    return null;*/
   }
 }

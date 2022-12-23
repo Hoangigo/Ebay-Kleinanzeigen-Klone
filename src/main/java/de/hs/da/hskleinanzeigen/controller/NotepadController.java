@@ -46,8 +46,10 @@ public class NotepadController {
           description = "Notepad of the given user has successfully been updated",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = NotepadPutDTO.class))}),
+      @ApiResponse(responseCode = "404", content = @Content,
+          description = "Advertisement or User with the given ids not found"),
       @ApiResponse(responseCode = "400", content = @Content,
-          description = "Advertisement or User with the given ids not found OR payload incomplete")})
+          description = "Payload incomplete or incorrect")})
   public NotepadPutDTO addADtoNotepad(@Valid @RequestBody NotepadPutDTO note,
       @Parameter(description = "id of user whom notepad should be updated")
       @PathVariable Integer userId) {

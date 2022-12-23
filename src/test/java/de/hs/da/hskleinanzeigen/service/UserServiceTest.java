@@ -4,6 +4,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.hs.da.hskleinanzeigen.entities.User;
+import de.hs.da.hskleinanzeigen.exception.NoContentException;
+import de.hs.da.hskleinanzeigen.exception.PayloadIncorrectException;
+import de.hs.da.hskleinanzeigen.exception.UserEmailAlreadyExitsException;
+import de.hs.da.hskleinanzeigen.exception.UserNotFoundException;
 import de.hs.da.hskleinanzeigen.repository.UserRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -47,10 +49,10 @@ public class UserServiceTest {
     Mockito.when(repository.findByEmail(Mockito.anyString()))
         .thenReturn(Optional.ofNullable(generateUser()));
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    UserEmailAlreadyExitsException exception = assertThrows(UserEmailAlreadyExitsException.class,
         () -> userService.createUser(generateUser()));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.CONFLICT);
+    assertThat(exception.getMessage()).isEqualTo(UserEmailAlreadyExitsException.outputMessage);
 
     Mockito.verify(repository).findByEmail(generateUser().getEmail());
   }
@@ -88,37 +90,37 @@ public class UserServiceTest {
     Mockito.when(repository.findById(Mockito.anyInt()))
         .thenReturn(Optional.ofNullable(null));
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(UserNotFoundException.class,
         () -> userService.readOneUser(generateUser().getId()));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(exception.getMessage()).isEqualTo(UserNotFoundException.outputMessage);
 
     Mockito.verify(repository).findById(generateUser().getId());
   }
 
   @Test
   void readUsers_whenPageParameterInvalid() {
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    assertThrows(PayloadIncorrectException.class,
         () -> userService.readUsers(invalidPageStart, validPageSize));
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+    //assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 
-    exception = assertThrows(ResponseStatusException.class,
+    assertThrows(PayloadIncorrectException.class,
         () -> userService.readUsers(validPageStart, invalidPageSize));
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+    // assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
 
-    exception = assertThrows(ResponseStatusException.class,
+    assertThrows(PayloadIncorrectException.class,
         () -> userService.readUsers(invalidPageStart, invalidPageSize));
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+    // assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
   }
 
   @Test
   void readUsers_whenNoContent() {
     Page<User> emptyPage = Page.empty();
     Mockito.when(repository.findAll((Pageable) Mockito.any())).thenReturn(emptyPage);
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(NoContentException.class,
         () -> userService.readUsers(validPageStart, validPageSize));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
+    assertThat(exception.getMessage()).isEqualTo("Such User entries not found");
   }
 
   @Test

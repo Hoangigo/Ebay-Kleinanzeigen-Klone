@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hs.da.hskleinanzeigen.entities.Category;
+import de.hs.da.hskleinanzeigen.exception.CategoryNameAlreadyExitsException;
 import de.hs.da.hskleinanzeigen.mapper.CategoryMapper;
 import de.hs.da.hskleinanzeigen.mapper.CategoryMapperImpl;
 import de.hs.da.hskleinanzeigen.service.CategoryService;
@@ -19,11 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.server.ResponseStatusException;
 
 @WebMvcTest(value = CategoryController.class)
 @Import(CategoryMapperImpl.class)
@@ -82,16 +81,16 @@ public class CategoryControllerIT {
 
   @WithMockUser(username = "test", password = "user")
   @Test
-  void createCategory_whenPayloadIncomplete() throws Exception {
+  void createCategory_whenNameAlreadyExits() throws Exception {
     //final String content = objectMapper.writeValueAsString(CATEGORY_PAYLOAD_INCOMPLETE);
     final String content = objectMapper.writeValueAsString(
         categoryMapper.toCategoryDTO(generateCategory()));
-    doThrow(new Exception(HttpStatus.BAD_REQUEST.toString())).when(service)
+    doThrow(new CategoryNameAlreadyExitsException()).when(service)
         .createCategory(Mockito.any());
     mvc.perform(post(BASE_PATH).with(csrf())//.with(rob())
             .contentType(MediaType.APPLICATION_JSON)
-            .content(content)).andExpect(status().isBadRequest())
+            .content(content)).andExpect(status().isConflict())
         .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(
-            ResponseStatusException.class));
+            CategoryNameAlreadyExitsException.class));
   }
 }

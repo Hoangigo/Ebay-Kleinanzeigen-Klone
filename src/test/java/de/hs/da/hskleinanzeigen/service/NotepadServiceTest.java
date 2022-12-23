@@ -7,6 +7,9 @@ import de.hs.da.hskleinanzeigen.dto.NotepadPutDTO;
 import de.hs.da.hskleinanzeigen.entities.Advertisement;
 import de.hs.da.hskleinanzeigen.entities.Notepad;
 import de.hs.da.hskleinanzeigen.entities.User;
+import de.hs.da.hskleinanzeigen.exception.AdNotFoundException;
+import de.hs.da.hskleinanzeigen.exception.NoContentException;
+import de.hs.da.hskleinanzeigen.exception.UserNotFoundException;
 import de.hs.da.hskleinanzeigen.repository.AdvertisementRepository;
 import de.hs.da.hskleinanzeigen.repository.NotepadRepository;
 import de.hs.da.hskleinanzeigen.repository.UserRepository;
@@ -20,8 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 public class NotepadServiceTest {
@@ -46,11 +47,10 @@ public class NotepadServiceTest {
   void getNotepadByUser_whenIdNotMatch() {
     Mockito.when(userRepository.existsById(Mockito.anyInt())).thenReturn(false);
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(UserNotFoundException.class,
         () -> service.getNotepadByUser(Mockito.anyInt()));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
-    assertThat(exception.getReason()).isEqualTo("User with the given id not found");
+    assertThat(exception.getMessage()).isEqualTo("User with the given id not found");
 
     Mockito.verify(userRepository).existsById(Mockito.anyInt());
   }
@@ -60,11 +60,10 @@ public class NotepadServiceTest {
     Mockito.when(userRepository.existsById(Mockito.anyInt())).thenReturn(true);
     Mockito.when(notRepository.findByUserId(Mockito.anyInt())).thenReturn(new ArrayList<>());
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(NoContentException.class,
         () -> service.getNotepadByUser(Mockito.anyInt()));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.NO_CONTENT);
-    assertThat(exception.getReason()).isEqualTo("No entry found on notepad for the given user");
+    assertThat(exception.getMessage()).isEqualTo("No entry found on notepad for the given user");
 
     Mockito.verify(userRepository).existsById(Mockito.anyInt());
   }
@@ -89,11 +88,10 @@ public class NotepadServiceTest {
   void deleteNotepad_whenUserNotFound() {
     Mockito.when(userRepository.existsById(Mockito.anyInt())).thenReturn(false);
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(UserNotFoundException.class,
         () -> service.deleteNotepad(Mockito.anyInt(), 2));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
-    assertThat(exception.getReason()).isEqualTo("User with the given id not found");
+    assertThat(exception.getMessage()).isEqualTo(UserNotFoundException.outputMessage);
 
     Mockito.verify(userRepository).existsById(Mockito.anyInt());
   }
@@ -103,11 +101,10 @@ public class NotepadServiceTest {
     Mockito.when(userRepository.existsById(Mockito.anyInt())).thenReturn(true);
     Mockito.when(adRepository.existsById(Mockito.anyInt())).thenReturn(false);
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(AdNotFoundException.class,
         () -> service.deleteNotepad(10, Mockito.anyInt()));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
-    assertThat(exception.getReason()).isEqualTo("Advertisement with the given id not found");
+    assertThat(exception.getMessage()).isEqualTo(AdNotFoundException.outputMessage);
 
     Mockito.verify(userRepository).existsById(Mockito.anyInt());
     Mockito.verify(adRepository).existsById(Mockito.anyInt());
@@ -130,11 +127,10 @@ public class NotepadServiceTest {
     NotepadPutDTO insertNotepad = Mockito.mock(NotepadPutDTO.class);
     Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(null));
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(UserNotFoundException.class,
         () -> service.addADtoNotepad(insertNotepad, Mockito.anyInt()));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertThat(exception.getReason()).isEqualTo("User with the given id not found");
+    assertThat(exception.getMessage()).isEqualTo(UserNotFoundException.outputMessage);
 
     Mockito.verify(userRepository).findById(Mockito.anyInt());
   }
@@ -146,11 +142,10 @@ public class NotepadServiceTest {
     Mockito.when(userRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(user));
     Mockito.when(adRepository.findById(Mockito.anyInt())).thenReturn(Optional.ofNullable(null));
 
-    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+    Exception exception = assertThrows(AdNotFoundException.class,
         () -> service.addADtoNotepad(insertNotepad, Mockito.anyInt()));
 
-    assertThat(exception.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertThat(exception.getReason()).isEqualTo("Advertisement with the given id not found");
+    assertThat(exception.getMessage()).isEqualTo(AdNotFoundException.outputMessage);
 
     Mockito.verify(userRepository).findById(Mockito.anyInt());
     Mockito.verify(adRepository).findById(insertNotepad.getAdvertisementId());
