@@ -24,6 +24,14 @@ spring:
     init:
       mode: never
 
+  cache:
+    type: redis
+
+  redis:
+    host: localhost
+    port: 6379
+    time-to-live: 600000
+
   liquibase:
     change-log: classpath:/liquibase/liquibase-changeLog.xml
     enabled: true
