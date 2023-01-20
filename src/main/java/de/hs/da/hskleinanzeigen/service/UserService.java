@@ -22,7 +22,6 @@ public class UserService {
 
   private final UserRepository userRepository;
 
-  @CachePut(value = "Users", key = "#user.id" , unless="#result == null")
   public User createUser(User user) {
     Optional<User> doubleEmail = userRepository.findByEmail(user.getEmail());
     if (doubleEmail.isPresent()) {
@@ -33,7 +32,6 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  @Cacheable(value = "Users", key = "#id")
   public User readOneUser(final Integer id) {
     Optional<User> user = userRepository.findById(id);
     if (user.isPresent()) {
