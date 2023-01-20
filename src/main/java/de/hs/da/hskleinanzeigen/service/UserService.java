@@ -8,8 +8,6 @@ import de.hs.da.hskleinanzeigen.exception.UserNotFoundException;
 import de.hs.da.hskleinanzeigen.repository.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
