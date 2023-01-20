@@ -65,7 +65,7 @@ public class CategoryControllerIT {
   }*/
 
   @WithMockUser(username = "admin", password = "admin")
-  //TODO wieso muss es nicht zu WebSecurity passen?
+  // wieso muss es nicht zu WebSecurity passen?
   @Test
   void createCategory_whenSucessfull() throws Exception {
     final String content = objectMapper.writeValueAsString(
