@@ -4,18 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hs.da.hskleinanzeigen.dto.UserDTO;
 import de.hs.da.hskleinanzeigen.entities.User;
+import de.hs.da.hskleinanzeigen.mapper.UserMapper;
 import de.hs.da.hskleinanzeigen.service.UserService;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,26 +26,25 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
-//@WebMvcTest(value = UserController.class)
-//@Import(UserMapperImpl.class)
+
 @AutoConfigureMockMvc
-//@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class UserControllerCachingIT {
 
   final String BASE_PATH = "/api/users";
 
   @Autowired
-  MockMvc mvc;
+  private WebApplicationContext applicationContext;
 
-
+  private MockMvc mvc;
   @MockBean
   UserService service;
 
@@ -54,6 +55,15 @@ public class UserControllerCachingIT {
   ObjectMapper objectMapper;
 
   private static GenericContainer genericContainer;
+  @Autowired
+  UserMapper userMapper;
+
+  @BeforeEach
+  public void init() {
+    this.mvc = MockMvcBuilders
+        .webAppContextSetup(applicationContext)
+        .build();
+  }
 
   User generateUser(int id, String text) {
     return new User(id, (text + "@h-da.de"), "geheim", "Tch",
@@ -77,44 +87,70 @@ public class UserControllerCachingIT {
   }
 
 
-
-
-
   @Test
   @WithMockUser(username = "admin", password = "admin")
-  void readOneUser_FromCacheAfterBeenCreated()  throws Exception{
+  void readOneUser_FromCacheAfterBeenCreated() throws Exception {
     User returnedUser = generateUser(1089, "readAfterCreate");
 
     when(service.createUser(Mockito.any())).thenReturn(returnedUser);
 
-    /*Mockito.when(repository.findByEmail(Mockito.any()))
-        .thenReturn(Optional.ofNullable(null));
-    Mockito.when(repository.save(Mockito.any()))
-        .thenReturn(returnedUser);*/
+    //Cache is empty
+    Cache userCache = cacheManager.getCache("Users");
+    userCache.clear();
 
+    //Create a new User
     mvc.perform(post(BASE_PATH)//.with(rob())
             .content(payloadUserDTO())//.with(user("admin").password("admin"))
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print()).andExpect(status().isCreated())
     ;
 
-    //assertThat(returnedUser).isEqualTo(userService.createUser(returnedUser));
-
     //check if the created user object was stored in Cache
-    Cache userCache = cacheManager.getCache("Users");
-    assertThat(userCache.get(returnedUser.getId(), User.class)).isNotNull();
+    userCache = cacheManager.getCache("Users");
+    assertThat(userCache.get(returnedUser.getId(), UserDTO.class)).isNotNull();
 
-    //Because of CachePUT this should return the User from the cache without invoking the repository
-   // User userCacheHit = userService.readOneUser(returnedUser.getId());
+    //Because of CachePUT this should return the UserDTO from the cache without invoking the service
     mvc.perform(get(BASE_PATH + "/{id}", returnedUser.getId()).with(csrf())//.with(rob())
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print()).andExpect(status().isOk())
         .andExpect(result -> AssertionsForClassTypes.assertThat(
             objectMapper.readValue(result.getResponse().getContentAsString(),
-                User.class)).isEqualTo(returnedUser));
-    //assertThat(returnedUser).isEqualTo(userCacheHit);
-    Mockito.verify(service, times(0)).readOneUser(returnedUser.getId());
+                UserDTO.class)).isEqualTo(userMapper.toUserDTO(returnedUser)));
 
+    //check if the method in service has not been called
+    Mockito.verify(service, times(0)).readOneUser(returnedUser.getId());
+  }
+
+  @Test
+  void readOneUser_whenSameUserBeReadTwice() throws Exception {
+    User existingUser = generateUser(1028, "readTwice");
+
+    when(service.readOneUser(existingUser.getId())).thenReturn(existingUser);
+
+    //check if there is an UserDTO object with this id stored in cache
+    Cache userCache = cacheManager.getCache("Users");
+    assertThat(userCache.get(existingUser.getId(), UserDTO.class)).isNull();
+
+    mvc.perform(get(BASE_PATH + "/{id}", existingUser.getId()).with(csrf())
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print()).andExpect(status().isOk())
+        .andExpect(result -> AssertionsForClassTypes.assertThat(
+            objectMapper.readValue(result.getResponse().getContentAsString(),
+                UserDTO.class)).isEqualTo(userMapper.toUserDTO(existingUser)));
+
+    //check if the read userDTO object was stored in Cache
+    assertThat(userCache.get(existingUser.getId(), UserDTO.class)).isNotNull();
+
+    //this second invocation should return the item from the cache without invoking the service
+    mvc.perform(get(BASE_PATH + "/{id}", existingUser.getId()).with(csrf())//.with(rob())
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print()).andExpect(status().isOk())
+        .andExpect(result -> AssertionsForClassTypes.assertThat(
+            objectMapper.readValue(result.getResponse().getContentAsString(),
+                UserDTO.class)).isEqualTo(userMapper.toUserDTO(existingUser)));
+
+    //2 calls of readOneUser in Controller but just one call of readOneUser in Service
+    Mockito.verify(service, times(1)).readOneUser(existingUser.getId());
   }
 
 
