@@ -30,7 +30,7 @@ spring:
   redis:
     host: localhost
     port: 6379
-    time-to-live: 600000
+    time-to-live: 600000 #in seconds
 
   liquibase:
     change-log: classpath:/liquibase/liquibase-changeLog.xml
