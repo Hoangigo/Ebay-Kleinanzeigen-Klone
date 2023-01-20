@@ -31,7 +31,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(value = UserController.class)
-@Import(UserMapperImpl.class)
+@Import({UserMapperImpl.class})
 public class UserControllerIT {
 
   final String BASE_PATH = "/api/users";
@@ -137,7 +137,8 @@ public class UserControllerIT {
   @Test
   void createUser_whenAllOk() throws Exception {
 
-    when(service.createUser(Mockito.any())).thenReturn(null);
+    User newUser = Mockito.mock(User.class);
+    when(service.createUser(Mockito.any())).thenReturn(newUser);
 
     mvc.perform(post(BASE_PATH).with(csrf())//.with(rob())
             .content(payloadUserDTO())

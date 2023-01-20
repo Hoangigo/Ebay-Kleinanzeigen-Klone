@@ -1,6 +1,7 @@
 package de.hs.da.hskleinanzeigen.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class UserDTO {
+public class UserDTO implements Serializable { //TODO warum Serializable
 
   @EqualsAndHashCode.Include
   private Integer id;

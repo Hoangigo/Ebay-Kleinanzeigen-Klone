@@ -8,8 +8,6 @@ import de.hs.da.hskleinanzeigen.exception.UserNotFoundException;
 import de.hs.da.hskleinanzeigen.repository.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +20,6 @@ public class UserService {
 
   private final UserRepository userRepository;
 
-  @CachePut(value = "Users", key = "#user.id" , unless="#result == null")
   public User createUser(User user) {
     Optional<User> doubleEmail = userRepository.findByEmail(user.getEmail());
     if (doubleEmail.isPresent()) {
@@ -33,7 +30,6 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  @Cacheable(value = "Users", key = "#id")
   public User readOneUser(final Integer id) {
     Optional<User> user = userRepository.findById(id);
     if (user.isPresent()) {

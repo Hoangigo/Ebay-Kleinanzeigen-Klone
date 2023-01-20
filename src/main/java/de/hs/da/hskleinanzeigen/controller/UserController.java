@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,9 +54,9 @@ public class UserController {
           description = "Payload incomplete or validation failed", content = @Content),
       @ApiResponse(responseCode = "409",
           description = "The given email is already used by an other User", content = @Content)})
+  @CachePut(value = "Users", key = "#result.id")
   public UserDTO createUser(@Parameter(description = "Infos of the user to be created")
   @RequestBody @Valid UserDTO userDTO) {
-
     return userMapper.toUserDTO(userService.createUser(userMapper.toUserEntity(userDTO)));
   }
 
@@ -66,8 +68,10 @@ public class UserController {
               schema = @Schema(implementation = UserDTO.class))}),
       @ApiResponse(responseCode = "404", description = "No user found", content = @Content)
   })
+  @Cacheable(value = "Users", key = "#id")
   public UserDTO readOneUser(
       @Parameter(description = "id of user to be searched") @PathVariable final Integer id) {
+    System.out.println("In read");
     return userMapper.toUserDTO(userService.readOneUser(id));
   }
 
