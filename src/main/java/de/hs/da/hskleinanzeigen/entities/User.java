@@ -1,6 +1,7 @@
 package de.hs.da.hskleinanzeigen.entities;
 
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class User {
+public class User implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

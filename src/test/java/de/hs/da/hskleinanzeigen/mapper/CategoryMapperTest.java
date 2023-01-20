@@ -25,7 +25,7 @@ public class CategoryMapperTest {
   Category fromCategory;
   CategoryDTO fromCategoryDTO;
 
-  @BeforeEach  //TODO
+  @BeforeEach
   void setUp() {
     fromCategory = generateCategory("Corona");
     fromCategoryDTO = new CategoryDTO(11, 17, "erien5");
