@@ -16,6 +16,8 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -34,6 +36,9 @@ public class UserServiceCachingIntegrationTest {
 
   @MockBean
   private UserRepository repository;
+
+  @Autowired
+  CacheManager cacheManager;
 
   @Autowired
   private UserService userService;
@@ -78,6 +83,10 @@ public class UserServiceCachingIntegrationTest {
 
     assertThat(returnedUser).isEqualTo(userService.createUser(returnedUser));
 
+    //check if the created user object was stored in Cache
+    Cache userCache = cacheManager.getCache("Users");
+    assertThat(userCache.get(returnedUser.getId(), User.class)).isNotNull();
+
     //Because of CachePUT this should return the User from the cache without invoking the repository
     User userCacheHit = userService.readOneUser(returnedUser.getId());
     assertThat(returnedUser).isEqualTo(userCacheHit);
@@ -92,13 +101,21 @@ public class UserServiceCachingIntegrationTest {
     Mockito.when(repository.findById(existingUser.getId()))
         .thenReturn(Optional.of(existingUser));
 
+    //check if the user object is not stored in cache yet
+    Cache userCache = cacheManager.getCache("Users");
+    assertThat(userCache.get(existingUser.getId(), User.class)).isNull();
+
     User userCacheMiss = userService.readOneUser(existingUser.getId());
-    User userCacheHit = userService.readOneUser(existingUser.getId());
-
     assertThat(userCacheMiss).isEqualTo(existingUser);
-    assertThat(userCacheHit).isEqualTo(existingUser);
 
+    //check if the read user object was stored in Cache
+    Cache userCache2 = cacheManager.getCache("Users");
+    assertThat(userCache2.get(existingUser.getId(), User.class)).isNotNull();
+
+    //check of the next invocation this user would be answered from cache
     //the second invocation should return the item from the cache without invoking the repository
+    User userCacheHit = userService.readOneUser(existingUser.getId());
+    assertThat(userCacheHit).isEqualTo(existingUser);
     Mockito.verify(repository, times(1)).findById(existingUser.getId());
   }
 
